@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - i18n</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img class="img-fluid" alt="logo" src="../images/logo.png">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-md-12 mx-auto">
+                <h2 class="sub-title bg-danger text-white" align="center">Internacionalización i18 con Spring MVC</h2>
+                <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+                <p>En este proyecto <a href="https://github.com/wanchopi/springmvc5-i18n/">(descargar de GitHub)</a> vamos a internacionalizar el proyecto anterior, esto es tener el formulario en varios idiomas, en este caso lo vamos a tener en español y en inglés. Principalmente para que todo el mundo pueda entender los mensajes de error que puedan surgir al rellenar el formulario.</p>
+                <p>El numerónimo "i18n" se debe a que entre la primera i y la última ene de la palabra <em>internationalization</em> hay 18 letras.</p>
+                <p>Para quien quiera saber más sobre el tema, <a href="https://es.wikipedia.org/wiki/Internacionalizaci%C3%B3n_y_localizaci%C3%B3n" target="_blank">wikipedia</a> es una fuente fenomenal.</p>
+                <h4 class="sub-title bg-secondary text-white">El Proyecto</h4>
+                <h5>La estructura del proyecto</h5>
+                <img src="../images/spring-i18n.png" class="img-fluid" alt="estructura">
+                <p>Podemos observar dos archivos <em>properties</em> nuevos en la carpeta <em>resources</em>, <mark>messages_es</mark> y <mark>messages_en</mark> que son los archivos que contienen el texto en los idiomas que queremos que se vea nuestra página. Aunque el nombre del archivo puede ser el que nosotros queramos, el sufijo <em>"_es"</em> es obligatorio para el idioma español y el sufijo <em>"_en"</em> es para el ingles.</p>
+                <h5>Las dependencias</h5>
+                <h6 class="text-info">pom.xml</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="XML">
+&lt;dependencies&gt;
+  &lt;!-- Spring --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+      &lt;version&gt;5.1.5.RELEASE&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+      &lt;version&gt;${spring.version}&lt;/version&gt;
+      &lt;scope>test&lt;/scope&gt;
+  &lt;/dependency>
+  &lt;!-- Hibernate Validator --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+        &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+        &lt;version&gt;${hibernate.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;!-- javax.servlet --&gt;
+  &lt;dependency&gt;   
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt;   
+      &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;    
+      &lt;version&gt;3.1.0&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;   
+  &lt;/dependency&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet.jps&lt;/groupId&gt; 
+      &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt; 
+      &lt;version&gt;2.3.1&lt;/version&gt; 
+      &lt;scope&gt;provided&lt;/scope&gt; 
+  &lt;/dependency&gt;
+  &lt;!-- jstl --&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt; 
+      &lt;artifactId&gt;jstl&lt;/artifactId&gt; 
+      &lt;version&gt;1.2&lt;/version&gt;  
+  &lt;/dependency&gt;
+  &lt;!-- lombok --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+      &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+      &lt;version&gt;1.16.16&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;
+                    </code></pre>
+                </div>
+                <p>La dependecia nueva <em>lombok</em> la veremos cuando lleguemos al modelo del proyecto.</p>
+                <h5>La Configuración</h5>
+                <p>Las clases <mark>SpringWebAppInitializer</mark> y <mark>SpringappBusinessConfig</mark> no sufren ninguna modificación respecto a las del proyecto anterior, <a href="/form_springmvc.html#file-config-form">Formulario con Spring Mvc</a>, pero la clase <mark>WebMvcConfig</mark> si que cambia, pues necesitamos un <em>bean</em> que que implemente la interface <mark>MessageSource</mark> para localizar el origen de nuestros archivos que contienen el texto en varios idiomas</p>
+                <h6 class="text-info">WebMvcConfig.java</h6>
+                <div class="col-lg-12 mycode">
+                  <pre><code class="Java">
+package com.wanchopi.spring.config;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+
+/**
+ * Configure Spring MVC
+ * @author Wanchopi
+ *
+ */
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.wanchopi.spring")
+public class WebMvcConfig implements WebMvcConfigurer {
+  
+  @Bean(name = "viewResolver")
+  public InternalResourceViewResolver getViewResolver() {
+    InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+    
+    viewResolver.setPrefix("/WEB-INF/views/");
+    viewResolver.setSuffix(".jsp");
+    
+    return viewResolver;
+  }
+  
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/public/**").addResourceLocations("/public/"); 
+    }
+  
+  @Bean
+  public MessageSource messageSource() {
+      ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+      messageSource.setBasename("messages");
+      messageSource.setDefaultEncoding("UTF-8");
+      //messageSource.setCacheSeconds(1); 
+      return messageSource;
+  }
+
+}
+                  </code></pre>
+                </div>
+                <p>Os dejo un <a href="https://codigoalonso.blogspot.com/2016/01/internacionalizacion-i18n-en-spring-mvc.html" target="_blank">enlace interesante a una página</a> que explica esto bastante bien.</p>
+                <h5>El Modelo</h5>
+                <h6 class="text-info">Student.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.model;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Entity
+ * @author Wanchopi
+ *
+ */
+public class Student {
+  
+  @NotNull
+  @Size(min = 3, max = 25)
+  @Getter @Setter
+  private String userName;
+  
+  @NotNull
+  @Email
+  @Getter @Setter
+  private String email;
+  
+  @NotNull
+  @Pattern(regexp = "^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{4,6}$")
+  @Getter @Setter
+  private String password;
+  
+  @NotNull 
+  @Getter @Setter
+  private String gender;
+  
+  @NotNull
+  @Getter @Setter
+  private String country;
+  
+  @Getter @Setter
+  private boolean receivePaper;
+  
+  @NotEmpty
+  @Getter @Setter
+  private String[] favoriteFrameworks;
+
+}
+                    </code></pre>
+                </div>
+                <p>Esta clase ha adelgazado bastante, esto se debe a que por una parte, se han eliminado los mensajes personalizados de error ya que ahora se encuentran en los properties correspondientes como deciamos al principio y por otra se han eliminado los setters y getters y se han sustituido por las anotaciones <mark>@Getter</mark> y <mark>@Setter</mark> en cada campo. Esto es lo que hace <em>Lombok</em>, genera los getters y setters a partir de la anotaciones <mark>@Getter</mark> y <mark>@Setter</mark>.</p>
+                <p>Visitar esta página <a href="https://www.paradigmadigital.com/dev/proyecto-lombok-facilitame-la-vida/" target="_blank">Proyecto Lombok</a> para quien quiera conocer todo lo que puede hacer <em>Lombok</em> por los desarrolladores de software</p>
+                <h5>El Controlador</h5>
+                <p>Nada nuevo en el controlador.</p>
+                <h6 class="text-info">StudentController.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.controller;
+
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import com.wanchopi.spring.model.Student;
+
+
+/**
+ * Spring MVC Controller
+ * @author Wanchopi
+ *
+ */
+@Controller
+public class StudentController {
+  
+  @Value("${countries}")
+  private String countries; // load field countries of properties
+  
+  @Value("${frameworks}")
+  private String frameworks;  // load field frameworks of properties
+  
+  @ModelAttribute("countryList")
+  public String[] loadCountries() {
+    String[] items = this.countries.split(","); // converts a comma-separated string into an array
+    return items; 
+  }
+  
+  @ModelAttribute("frameworkList")
+  public String[] loadFrameworks() {
+    String[] items = this.frameworks.split(","); // convers a comma-separated string into an array
+    return items;
+  }
+  
+  @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+  
+  @GetMapping("/")
+  public String student(Model model) {
+    
+    Student student = new Student();
+    model.addAttribute("student", student);
+    return "index";
+  }
+  
+
+  @PostMapping("/save")
+  public String saveForm(@Valid @ModelAttribute("student") Student student,
+      BindingResult theBindingResult) {
+    
+    if (theBindingResult.hasErrors()) {
+      return "index";
+    }
+    else {
+      return "success";
+    }
+  }
+
+}
+                    </code></pre>
+                </div>
+                <h5>Las Vistas</h5>
+                <h6 class="text-info">index.jsp</h6>
+                <div class="col-lg-12 mycode">
+                  <pre><code class="html">
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;
+&lt;%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %&gt;
+...
+&lt;form:form action="save" method="post" modelAttribute="student" cssClass="form-horizontal"&gt;
+    &lt;!-- user name --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="username" class="col-md-3 control-label font-weight-bold"&gt;
+          &lt;spring:message code="message.field.name"/&gt;
+        &lt;/label&gt;
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="userName" type="text" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- email --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email" class="col-md-3 control-label font-weight-bold"&gt;
+          &lt;spring:message code="message.field.email"/&gt;
+        &lt;/label&gt;
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="email" type="email" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- password --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="password" class="col-md-3 control-label font-weight-bold"&gt;
+          &lt;spring:message code="message.field.password"/&gt;
+        &lt;/label>
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="password" type="password" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- radiobutton responsive --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;label for="gender" class="col-md-3 control-label font-weight-bold"&gt;
+          &lt;spring:message code="message.field.gender"/&gt;
+        &lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-lg-3"&gt;
+          &lt;form:radiobutton path="gender" value="Hombre"/&gt;
+          &lt;label class="text-muted" for="male"&gt;
+            &lt;strong&gt;&lt;spring:message code="message.field.gender.male"/&gt;&lt;/strong&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="col-lg-3"&gt;
+          &lt;form:radiobutton path="gender" value="Mujer"/&gt;
+          &lt;label class="text-muted" for="female"&gt;
+            &lt;strong&gt;&lt;spring:message code="message.field.gender.male"/&gt;&lt;/strong&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- country --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="country" class="col-md-3 control-label font-weight-bold"&gt;
+        &lt;spring:message code="message.field.country"/&gt;
+      &lt;/label&gt;
+      &lt;div class="col-md-9"&gt;
+        &lt;form:select path="country" class="text-muted"&gt;
+          &lt;form:option value="NONE" label="--- Select ---"/&gt;
+          &lt;form:options items="${countryList}"/&gt;
+        &lt;/form:select&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- favoriteFrameworks responsive --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;label for="frameworks" class="col-md-9 control-label font-weight-bold"&gt;
+          &lt;spring:message code="message.field.frameworks"/&gt;
+        &lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div class="row"&gt;
+        &lt;c:forEach var="i" items="${frameworkList}"&gt;
+          &lt;div class="col-lg-3"&gt;
+            &lt;form:checkbox path="favoriteFrameworks" value="${i}"/&gt;
+            &lt;label class="text-muted" for="male"&gt;&lt;strong&gt;&lt;c:out value="${i}"&gt;&lt;/c:out&gt;&lt;/strong&gt;&lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/c:forEach&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- receivePaper --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-lg-4"&gt;
+          &lt;label for="receivePaper" class="control-label font-weight-bold"&gt;
+            &lt;spring:message code="message.field.newsletter"/&gt;
+          &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="col-lg-4"&gt;
+          &lt;form:checkbox path = "receivePaper" /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+      &lt;!-- Button --&gt;
+      &lt;div class="col-md-offset-3 col-md-9"&gt;
+        &lt;form:button type="Submit" class="btn btn-primary"&gt;
+          &lt;spring:message code="message.field.btn"/&gt;
+        &lt;/form:button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form:form&gt;
+                  </code></pre>
+                </div>
+                <p>Importamos los <mark>Tags</mark> que nos hacen falta:</p>
+                <div class="col-lg-12 mycode">
+                  <pre><code class="html">
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+...
+                  </code></pre>
+                </div>
+                <p>Obtenemos el valor de los properties:</p>
+                <div class="col-lg-12 mycode">
+                  <pre><code class="html">
+                    ...
+                    &lt;spring:message code="message.field.name"/&gt;
+                    ...
+                  </code></pre>
+                </div>
+                <h6 class="text-info">success.jsp</h6>
+                <div class="col-lg-12 mycode">
+                  <pre><code class="html">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;success :: i18n&lt;/title&gt;
+&lt;link rel="stylesheet" href="public/css/bootstrap.min.css"&gt;
+&lt;link rel="stylesheet" href="public/css/mystyle.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+      &lt;div class="col-lg-12" align="center"&gt;
+        &lt;img alt="logo" src="public/images/logo.png"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+      &lt;div class="col-lg-12" align="center"&gt;
+        &lt;h3&gt;&lt;spring:message code="message.success"/&gt;&lt;/h3&gt;
+        &lt;table class="table table-striped table-bordered"&gt;
+          &lt;thead align="center"&gt;
+            &lt;tr&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.name"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.email"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.gender"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.password"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.country"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message code="message.field.newsletter"/&gt;&lt;/th&gt;
+              &lt;th scope="col"&gt;&lt;spring:message text="Framework"/&gt;&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;
+              &lt;td&gt;${student.userName}&lt;/td&gt;
+              &lt;td&gt;${student.email}&lt;/td&gt;
+              &lt;td&gt;${student.gender}&lt;/td&gt;
+              &lt;td&gt;${student.password}&lt;/td&gt;
+              &lt;td&gt;${student.country}&lt;/td&gt;
+              &lt;td&gt;
+                &lt;c:choose&gt;
+                  &lt;c:when test="${student.receivePaper==true}"&gt;
+                    accepted
+                  &lt;/c:when&gt;
+                  &lt;c:otherwise&gt;
+                    denied
+                  &lt;/c:otherwise&gt;
+                &lt;/c:choose&gt;
+              &lt;/td&gt;
+              &lt;td&gt;
+                &lt;c:forEach items="${student.favoriteFrameworks}"  var="name" varStatus="status"&gt;
+                  &lt;c:out value="${name}"&gt;&lt;/c:out&gt;
+                  &lt;c:if test="${!status.last}"&gt;,&lt;/c:if&gt;
+                &lt;/c:forEach&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- jQuery core JavaScript --&gt;
+  &lt;script src="public/js/jquery.min.js"&gt;&lt;/script&gt;
+  &lt;!-- Bootstrap core JavaScript --&gt;
+  &lt;script src="public/js/bootstrap.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                  </code></pre>
+                </div>
+                <p>Para probar que muestra los mensajes en el idioma en el que está configurado el navegador, ejecutar el programa y abrir la url en un navegador (Firefox, por ejemplo), después configuraís Chrome en inglés y haceís lo mismo y vereís la diferencia.</p>
+                <p>Envío del formulario con errores en Firefox:</p>
+                <img src="../images/run-firefox.png" class="img-fluid" alt="aplicación">
+                <p>Envío del formulario con errores en Chrome (configurado en inglés):</p>
+                <img src="../images/run-chrome.png" class="img-fluid" alt="aplicación">
+                <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+                <ul>
+                    <li>Eclipse Version: 2019-03 (4.11.0)</li>
+                    <li>jdk 1.8.0</li>
+                    <li>Maven 3.6</li>
+                    <li>Spring MVC 5.1.5</li>
+                    <li>bootstrap 4.3.1</li>
+                    <li>Server Tomcat v8</li>
+                </ul>
+                <!-- nav -->
+                <div class="row" style="margin-left: 20px;">
+                    <div class="col-lg-6">
+                        <a href="./form_val_springmvc.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+                        <p style="margin-left: 25px; text-decoration: underline;"> Validar formulario con Spring </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <a href="./springmvc5-hibernate.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+                        <p style="text-decoration: underline;">Spring MVC - Hibernate</p>
+                    </div>
+                </div>
+            </div> <!-- / main col -->
+        </div> <!-- / main row -->
+    </div> <!-- / main container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

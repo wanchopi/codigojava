@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - form spring MVC</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img src="../images/logo.png" class="img-fluid" alt="logo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+          <h2 class="sub-title bg-danger text-white" align="center">Formularios con Spring MVC</h2>
+          <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+          <p>Seguimos avanzando con Spring y hoy vamos a ver como realizar un formulario con este fabuloso framework.</p>
+          <p>Podeis descargar este proyecto <span><a href="https://github.com/wanchopi/springmvc5-form/" target="_blank">(descargar de GitHub)</a></span></trong>. En él se ven varios de los componentes habituales de los formularios, esto es, <mark>input</mark>, <mark>password</mark>, <mark>radiobutton</mark>, <mark>select</mark>, etc..., pero lo que se pretende es ver como cargar los <mark>select</mark> y <mark>checkbox</mark> desde un archivo <mark>properties</mark>. En posteriores tutoriales, ya nos conectaremos con una base de datos <mark>MySQL</mark>.</p>
+          <h4 class="sub-title bg-secondary text-white">El Proyecto</h4>
+          <h5>La estructura del proyecto</h5>
+          <img src="../images/springform.png" class="img-fluid" alt="estructura">
+          <p>Podemos observar que tenemos dos vistas, un <mark>index.jsp</mark> que es el que contiene el formulario y un <mark>success.jsp</mark> que es el resultado de enviar el mismo.</p>
+          <p>Empezamos como siempre por las dependencias necesarias para llevar a cabo el proyecto.</p>
+          <h5>Las dependencias</h5>
+          <h6 class="text-info">pom.xml</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+  &lt;dependencies&gt;
+  &lt;!-- spring --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+      &lt;version&gt;5.1.5.RELEASE&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+      &lt;version&gt;${spring.version}&lt;/version&gt;
+      &lt;scope>test&lt;/scope&gt;
+  &lt;/dependency>
+  &lt;!-- javax.servlet --&gt;
+  &lt;dependency&gt;   
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt;   
+      &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;    
+      &lt;version&gt;3.1.0&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;   
+  &lt;/dependency&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet.jps&lt;/groupId&gt; 
+      &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt; 
+      &lt;version&gt;2.3.1&lt;/version&gt; 
+      &lt;scope&gt;provided&lt;/scope&gt; 
+  &lt;/dependency&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt; 
+      &lt;artifactId&gt;jstl&lt;/artifactId&gt; 
+      &lt;version&gt;1.2&lt;/version&gt; 
+  &lt;/dependency>
+  &lt;!-- junit --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;4.12&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+  &lt;/dependency&gt;
+  &lt;!-- log4j --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;log4j&lt;/groupId&gt;
+      &lt;artifactId&gt;log4j&lt;/artifactId&gt;
+      &lt;version&gt;1.2.17&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- slf4j --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+      &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+      &lt;version&gt;1.7.28&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId>org.slf4j&lt;/groupId&gt;
+      &lt;artifactId>slf4j-log4j12&lt;/artifactId&gt;
+      &lt;version>1.7.28&lt;/version&gt;
+      &lt;scope>test&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;
+            </code></pre>
+          </div>
+          <h5 id="file-config-form">La Configuración</h5>
+          <p>En el paquete de configuración del proyecto, además de las dos clases de configuración que teniamos en el proyecto anterior, tenemos otra más para configurar el modelo de negocio.</p>
+          <p>Teneis que acordaros de añadir esta última clase de configuración a la clase <mark>SpringWebAppInitializer.java</mark>.</p>
+          <h6 class="text-info">SpringappBusinessConfig.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.config;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+
+/**
+ * configures the business model
+ * @author Wanchopi
+ *
+ */
+@Configuration
+@ComponentScan(basePackages = { "com.wanchopi.spring.*" })
+@PropertySource( "classpath:config.properties" )
+public class SpringappBusinessConfig {
+
+  public SpringappBusinessConfig() {
+    super();
+  }
+}
+            </code></pre>
+          </div>
+          <h6 class="text-info">SpringWebAppInitializer.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.config;
+
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+/**
+ * Configura el Servlet Dispatcher
+ * @author Wanchopi
+ *
+ */
+public class SpringWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+  @Override
+  protected Class&lt;?&gt;[] getRootConfigClasses() {
+    return new Class&lt;?&gt;[] { SpringappBusinessConfig.class};
+  }
+
+  @Override
+  protected Class&lt;?&gt;[] getServletConfigClasses() {
+    return new Class&lt;?&gt;[] { WebMvcConfig.class};
+  }
+
+  @Override
+  protected String[] getServletMappings() {
+    return new String[] { "/" };
+  }
+
+}
+            </code></pre>
+          </div>
+          <h5>El Modelo</h5>
+          <p>El modelo es una clase <mark>Student.java</mark> con siete campos y sus respectivos setters y getters.</p>
+          <h6 class="text-info">Student.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.model;
+
+/**
+ * Entity
+ * @author Wanchopi
+ *
+ */
+public class Student {
+  
+  private String userName;
+  private String email;
+  private String password;
+  private String gender;
+  private String country;
+  private boolean receivePaper;
+  private String[] favoriteFrameworks;
+
+  // setters and getters
+
+  // equals and hasCode
+
+}
+            </code></pre>
+          </div>
+          <h5>El Controlador</h5>
+          <p>Este controlador ya tiene un poco mas de chicha que el del proyecto anterior, lo interesante del proyecto está, como decía al inicio del artículo, en la carga tanto del <mark>select</mark> como del <mark>checkbox</mark>. Ambos se cargan desde un archivo <strong>properties</strong>. En el<mark>select</mark> seleccionamos un pais de la Unión Europea, y en el <mark>checkbox</mark> seleccionamos un par de lenguajes de programación.</p>
+          <h6 class="text-info">StudentController.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.wanchopi.spring.model.Student;
+
+
+/**
+ * Spring MVC Controller
+ * @author Wanchopi
+ *
+ */
+@Controller
+public class StudentController {
+  
+  @Value("${countries}")
+  private String countries; // load field countries of properties
+  
+  @Value("${frameworks}")
+  private String frameworks;  // load field frameworks of properties
+  
+  @ModelAttribute("countryList")
+  public String[] loadCountries() {
+    String[] items = this.countries.split(","); // converts a comma-separated string into an array
+    return items; 
+  }
+  
+  @ModelAttribute("frameworkList")
+  public String[] loadFrameworks() {
+    String[] items = this.frameworks.split(","); // convers a comma-separated string into an array
+    return items;
+  }
+  
+  @GetMapping("/")
+  public ModelAndView student() {
+    User student = new Student();
+    ModelAndView mav = new ModelAndView("index", "student", student);
+    return mav;
+  }
+  
+
+  @PostMapping("/save")
+  public ModelAndView saveForm(@ModelAttribute("student") Student student) {
+    
+    Map&lt;String, Object&gt; myModel = new HashMap&lt;String, Object&gt;();
+    myModel.put("message", "Usuario registrado satisfactoriamente");
+    myModel.put("student", student);
+    
+    ModelAndView mav = new ModelAndView("success", "model", myModel);
+    
+    return mav;
+  }
+
+}
+            </code></pre>
+          </div>
+          <p>Y aquí un poco de teoria para entender las anotaciones nuevas que aparecen en este controller.</p>
+          <ul>
+            <li><a href="https://www.baeldung.com/spring-value-annotation">@Value</a></li>
+            <li><a href="https://www.baeldung.com/spring-mvc-and-the-modelattribute-annotation">@ModelAttribute</a></li>
+            <li><a href="https://www.arquitecturajava.com/spring-getmapping-postmapping-etc/">@GetMapping y @PostMapping</a></li>
+          </ul>
+          <h5>Las Vistas</h5>
+          <p>Pasamos a ver el código <mark>html</mark> del formulario.</p>
+          <h6 class="text-info">index.jsp (solo el formulario)</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+  &lt;form:form action="save" method="post" modelAttribute="student" cssClass="form-horizontal"&gt;
+    &lt;!-- user name --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="username" class="col-md-3 control-label font-weight-bold"&gt;Nombre&lt;/label&gt;
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="userName" type="text" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- email --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email" class="col-md-3 control-label font-weight-bold"&gt;Email&lt;/label&gt;
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="email" type="email" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- password --&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="password" class="col-md-3 control-label font-weight-bold"&gt;Password&lt;/label>
+        &lt;div class="col-md-9"&gt;
+          &lt;form:input path="password" type="password" cssClass="form-control" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- radiobutton responsive --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;label for="gender" class="col-md-3 control-label font-weight-bold"&gt;Género&lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-lg-3"&gt;
+          &lt;form:radiobutton path="gender" value="Hombre"/&gt;
+          &lt;label class="text-muted" for="male"&gt;&lt;strong&gt;Hombre&lt;/strong&gt;&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="col-lg-3"&gt;
+          &lt;form:radiobutton path="gender" value="Mujer"/&gt;
+          &lt;label class="text-muted" for="female"&gt;&lt;strong&gt;Mujer&lt;/strong&gt;&lt;/label&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- country --&gt;
+    &lt;div class="form-group"&gt;
+      &lt;label for="country" class="col-md-3 control-label font-weight-bold"&gt;Pais&lt;/label&gt;
+      &lt;div class="col-md-9"&gt;
+        &lt;form:select path="country" class="text-muted"&gt;
+          &lt;form:option value="NONE" label="--- Select ---"/&gt;
+          &lt;form:options items="${countryList}"/&gt;
+        &lt;/form:select&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- favoriteFrameworks responsive --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;label for="frameworks" class="col-md-9 control-label font-weight-bold"&gt;Escoge tus frameworks favoritos&lt;/label&gt;
+      &lt;/div&gt;
+      &lt;div class="row"&gt;
+        &lt;c:forEach var="i" items="${frameworkList}"&gt;
+          &lt;div class="col-lg-3"&gt;
+            &lt;form:checkbox path="favoriteFrameworks" value="${i}"/&gt;
+            &lt;label class="text-muted" for="male"&gt;&lt;strong&gt;&lt;c:out value="${i}"&gt;&lt;/c:out&gt;&lt;/strong&gt;&lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/c:forEach&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;!-- receivePaper --&gt;
+    &lt;div class="container form-group"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-lg-4"&gt;
+          &lt;label for="receivePaper" class="control-label font-weight-bold"&gt;Subscribe Newsletter&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="col-lg-4"&gt;
+          &lt;form:checkbox path = "receivePaper" /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="form-group"&gt;
+      &lt;!-- Button --&gt;
+      &lt;div class="col-md-offset-3 col-md-9"&gt;
+        &lt;form:button type="Submit" class="btn btn-primary"&gt;Enviar&lt;/form:button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/form:form&gt;
+            </code></pre>
+          </div>
+          <p>Resultando algo como esto después de ejecutar la aplicación</p>
+          <img src="../images/run2.png" class="img-fluid" alt="aplicación">
+          <p>En el archivo <mark>success.jsp</mark> simplemente recogemos los datos ingresados en el formulario en una tabla</p>
+          <p>Para el próximo tutorial validaremos este mismo formulario.</p>
+          <hr>
+          <p class="text-danger"><strong>Nota</strong>: Como en el tutorial anterior, en el código colgado en <mark>GitHub</mark> añado un test para el controlador, pero de momento eso lo obviamos hasta que veamos <mark>Spring Boot.</mark></p>
+          <hr>
+          <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+          <ul>
+            <li>Eclipse Version: 2019-03 (4.11.0)</li>
+            <li>jdk 1.8.0</li>
+            <li>Spring MVC 5.1.5</li>
+            <li>bootstrap 4.3.1</li>
+            <li>Server Tomcat v8.5</li>
+          </ul>
+          <!-- nav -->
+          <div class="row" style="margin-left: 20px;">
+            <div class="col-lg-6">
+              <a href="springmvc.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+              <p style="margin-left: 25px; text-decoration: underline;">Primer proyecto con Spring</p>
+            </div>
+            <div class="col-lg-6">
+              <a href="form_val_springmvc.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+              <p style="text-decoration: underline;">Validar un formulario</p>
+            </div>
+          </div>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

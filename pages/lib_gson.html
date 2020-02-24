@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - gson (json)</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>    
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img src="../images/logo.png"  class="img-fluid" alt="logo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+          <h2 class="sub-title bg-danger text-white" align="center">Librería Gson de Google</h2>
+          <p>En este proyecto <span><a href="https://github.com/wanchopi/library-gson">ir a GitHub</a></span> vamos a ver como la librería <span class="font-weight-bold">gson de Google</span> facilita mucho el trabajo a la hora de leer (deserializar) y escribir (serializar) archivos <strong>JSON</strong>. Para ello comenzamos añadiendo la dependencias necesarias a nuestro proyecto.</p>
+          <h5>Las dependencias</h5>
+          <h6 class="text-info">pom.xml</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+&lt;dependencies&gt;
+  &lt;!-- junit --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;junit&lt;/groupId&gt;
+        &lt;artifactId&gt;junit&lt;/artifactId&gt;
+        &lt;version&gt;3.8.1&lt;/version&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;!-- commons-io --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;commons-io&lt;/groupId&gt;
+      &lt;artifactId&gt;commons-io&lt;/artifactId&gt;
+      &lt;version&gt;2.6&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;!-- gson --&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
+      &lt;artifactId&gt;gson&lt;/artifactId&gt;
+      &lt;version&gt;2.2.2&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+            </code></pre>
+          </div>
+          <p>Aunque no vamos a hacer test unitarios, añadimos la dependencia <strong>junit</strong> porque a todos los proyectos java de verdad hay que hacerle test aunque sean obviedades.</p>
+          <h5>El modelo</h5>
+          <h6 class="text-info">User.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package es.json.model;
+
+import java.util.List;
+
+/**
+ * 
+ * @author Usuario
+ *
+ */
+public class User {
+  
+  private int id;
+  private String name;
+  private String password;
+  private List<String> languages;
+  
+  /**
+   * Empty constructor
+   */
+  public User() {
+    
+  }
+  
+  /**
+   * Overloaded constructor
+   * @param id
+   * @param name
+   * @param password
+   */
+  public User(int id, String name, String password, List<String> languages) {
+    this.id = id;
+    this.name = name;
+    this.password = password;
+    this.languages = languages;
+  }
+
+  // setterd and getters
+
+}
+            </code></pre>
+          </div>
+          <p>El proyecto consta de una clase <mark>User</mark> con cuatro campos (id, name, password y languages) que es la estructura de datos que vamos a convertir a <strong>json</strong> para después leerla, todo ello con la librería <strong>gson</strong>.</p>
+          <p>Para ello, creamos unos objetos de la clase <mark>User</mark> que guardaremos en un <mark>ArrayList</mark>. Logicamente en un proyecto de verdad, estos "usuarios" los obtendriamos de una base da datos, por ejemplo, pero aquí, introduciremos unos cuantos al azar, pues la finalidad del proyecto es probar la librería.</p>
+          <p>Una vez caragado el <mark>ArrayList</mark> con los usuarios, lo serializamos con el método <mark>toJson()</mark> de la clase <mark>Gson</mark>. Posteriormente lo guardamos en un archivo <strong>user.json</strong> ,es aquí donde nos hace falta echar mano de la librería <strong>commons-io</strong>, para finalmente deserializarlo con el método <mark>fromJson()</mark> de la misma clase que el anterior y poderlo leer, en este caso, de la consola de eclipse.</p>
+          <h5>El serializador</h5>
+          <h6 class="text-info">WriteJSON.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package es.json.serialization;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
+
+import es.json.model.User;
+
+/**
+ * An example of serialization of a series of objects of the User class to a JSON
+ * @author WANCHOPI
+ */
+public class WriteJSON {
+  
+  /*
+   * Constructor
+   */
+  public WriteJSON() {
+    
+    List%lt;User&gt; users = new ArrayList&lt;User&gt;();
+    
+    users = loadUsers();
+    
+    String json = new Gson().toJson(users);
+    saveJSON(json);
+    
+  }
+
+  private void saveJSON(String json) {
+    
+    File file = new File("json/user.json");
+
+    try {
+      FileUtils.touch(file);
+      FileUtils.writeStringToFile(file, json, "iso-8859-1");
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+  }
+
+  private List&lt;User&gt; loadUsers() {
+
+    List&lt;User&gt; users = new ArrayList&lt;User&gt;();
+    
+    List&lt;String&gt; languagesUser1 = new ArrayList&lt;String&gt;();
+    languagesUser1.add("Java");
+    languagesUser1.add("Python");
+    User user1 = new User(1, "Óscar", "1111", languagesUser1);
+    
+    List&lt;String&gt; languagesUser2 = new ArrayList&lt;String&gt;();
+    languagesUser2.add("Javascript");
+    languagesUser2.add("Python");
+    languagesUser2.add("PHP");
+    User user2 = new User(2, "Álvaro", "2222", languagesUser2);
+    
+    List&lt;String&gt; languagesUser3 = new ArrayList&lt;String&gt;();
+    languagesUser3.add("Javascript");
+    languagesUser3.add("Python");
+    languagesUser3.add("PHP");
+    languagesUser3.add("Ruby");
+    User user3 = new User(3, "Sonia", "3333", languagesUser3);
+    
+    users.add(user1);
+    users.add(user2);
+    users.add(user3);
+    
+    return users;
+  }
+
+}
+            </code></pre>
+          </div>
+          <h5>El deserializador</h5>
+          <h6 class="text-info">ReadJSON.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package es.json.deserialization;
+
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
+
+import es.json.model.User;
+
+
+/**
+ *
+ * @author Usuario
+ *
+ */
+public class ReadJSON {
+  
+  /**
+   * Constructor
+   */
+  public ReadJSON() {
+    
+    String jsonFile = readFile();
+    Gson gson = new Gson();
+    
+    User[] users = gson.fromJson(jsonFile, User[].class);
+    
+    for (User user : users) {
+      System.out.println(user);
+    }
+    
+  }
+
+  private String readFile() {
+    
+    File file = new File("json/user.json");
+    String content = "";
+    try {
+      content = FileUtils.readFileToString(file, "iso-8859-1");
+    } catch (Exception e) {
+      e.printStackTrace();
+    } 
+    return content;
+  }
+
+}
+            </code></pre>
+          </div>
+          <p>La clase principal simplemente crea dos objetos, un serializador y un deserializador</p>
+          <h5>La clase Main</h5>
+          <h6 class="text-info">App.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package es.json;
+
+import es.json.deserialization.ReadJSON;
+import es.json.serialization.WriteJSON;
+
+/**
+ * App
+ *
+ */
+public class App {
+  
+    public static void main( String[] args ) {
+        
+      new WriteJSON();
+      new ReadJSON();
+      
+    }
+}
+            </code></pre>
+          </div>
+          <h4>Herramientas y Software</h4>
+          <ul>
+            <li>Eclipse Version: 2019-03 (4.11.0)</li>
+            <li>Java SE-1.8 (jdk1.8.0)</li>
+            <li>Maven 3.6</li>
+            <li>gson-2.2.2.jar</li>
+            <li>commons-io-2.6.jar</li>
+          </ul>
+          <!-- nav -->
+          <div class="row" style="margin-left: 20px;">
+            <div class="col-lg-6">
+              <a href="java8_streams.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+              <p style="margin-left: 25px; text-decoration: underline;">streams con java8</p>
+            </div>
+            <div class="col-lg-6">
+              <a href="springmvc.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+              <p style="text-decoration: underline;">Spring Mvc</p>
+            </div>
+          </div>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

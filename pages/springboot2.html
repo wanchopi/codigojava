@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - springboot2</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img class="img-fluid" src="../images/logo.png">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+          <h2 class="sub-title bg-danger text-white" align="center">Introducción a Spring Boot 2</h2>
+          <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+          <p>Si <strong>Spring Web MVC</strong> es una extensión dentro de <strong>Spring Framework</strong> dirigido a facilitar el desarrollo de aplicaciones web utilizando el patrón <strong>Modelo-Vista-Controlador</strong>, <strong>Spring Boot</strong> es una tecnología dentro de <strong>Spring</strong> que nos facilita por un lado, la creación del proyecto y por otro el despliege de la app en un servidor. Quiere decir esto que no vamos a dejar de usar <strong>Spring MVC</strong> por usar <strong>Spring Boot</strong>, al contrario.</p>
+          <p>Este primer proyecto es el de la página oficial <a href="https://spring.io/guides/gs/spring-boot/" target="_blank">spring.io</a> que sirve de introducción. En posteriores proyectos haremos como con Spring Mvc, iremos añadiendo funcionalidades nuevas y lo iremos complicandon un poco. Es por este motivo que este proyecto no tiene repositorio en <strong>github</strong>, pues es una traducción muy resumida del ejemplo de la página oficial.</p>
+          <h4 class="sub-title bg-secondary text-white">El proyecto</h4>
+          <h5>Creación del proyecto</h5>
+          <p>Aunque se puede hacer de varias maneras, lo vamos a hacer desde <a href="https://start.spring.io/" target="_blank">Spring Initializr</a> como en la ejemplo oficial. En posteriores ejemplos lo haremos usando el <strong>Spring Tool Suite</strong> de Eclipse.</p>
+          <p>Esta página, es un formulario en donde seleccionamos nuestras opciones, que para este ejemplo dejamos todo por defecto y le añadimos la dependencia <strong>Spring Web</strong>.</p>
+          <p>Pulsamos generar y esto nos genera un zip que descomprimimos e importamos con el IDE que estemos trabajando, en mi caso con Eclipse.</p>
+          <p id="structure-springboot">Esto nos genera un proyecto con una estructura de árbol similar a esta:</p>
+          <img src="../images/springboot2.png" class="img-fluid" alt="estructura">
+          <h5>Las dependencias</h5>
+          <h6 class="text-info">pom.xml</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+      &lt;exclusions&gt;
+        &lt;exclusion&gt;
+          &lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;
+          &lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+      &lt;/exclusions&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt; 
+            </code></pre>
+          </div>
+          <p>No tocamos el archivo <mark>pom.xml</mark>, pues <strong>Spring Initializr</strong> ya lo ha generado con las dependencias que le hemos indicado.</p>
+          <h5>La Configuración</h5>
+          <p><strong>Spring Initializr</strong> crea una clase anotada con <mark>@SpringBootApplication</mark>, anotación que es equivalente a <mark>@Configuration</mark>, <mark>@EnableAutoConfiguration</mark> y <mark>@ComponentScan</mark>, todas ellas vistas en los proyectos anteriores.</p>
+          <h6 class="text-info">DemoApplication.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DemoApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(DemoApplication.class, args);
+  }
+
+}
+            </code></pre>
+          </div>
+          <h5>El Controlador</h5>
+          <p></p>
+          <h6 class="text-info">HomeController.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.example.demo.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * Main controller
+ * @author Wanchopi
+ *
+ */
+@RestController
+public class HelloController {
+  
+  @RequestMapping("/")
+  public String index() {
+    return "Greetings from Spring Boot!";
+  }
+
+}
+            </code></pre>
+          </div>
+          <p>El controlador está marcado con una anotación nueva <mark>@RestController</mark>, esta anotación es una combinación de <mark>@Controller</mark> y <mark>@ResponseBody</mark>, dos anotaciones que dan como resultado que las peticiones web devuelvan datos en lugar de una vista.</p>
+          <h5>Probando el proyecto</h5>
+          <p>Corremos el proyecto desde eclipe y este despliega.</p>
+          <p>Para ver el resultado abrimos cualquier navegador y en la barra de navegación introducimos la dirección <mark>localhost:8080</mark> y aparecerá el mensaje del controlador <strong>Greetings from Spring Boot!</strong>.</p>
+          <h5>Testing con Spring Boot</h5>
+          <p>Cuando creamos el proyecto y <strong>Spring Boot</strong> creó el archivo <mark>pom.xml</mark>, crea una dependencia por defecto:</p>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+  &lt;scope&gt;test&lt;/scope&gt;
+  &lt;exclusions&gt;
+    &lt;exclusion&gt;
+      &lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;
+      &lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;
+    &lt;/exclusion&gt;
+  &lt;/exclusions&gt;
+&lt;/dependency&gt;
+            </code></pre>
+          </div>
+          <p>Dependencia que ya habiamos visto en otros proyectos pero que nunca habiamos utilizado. Pues ha llegado el momento de hacer uso de ella. A partir de ahora, a todos nuestros proyectos con <strong>springboot2</strong> les haremos <strong>test</strong>.</p>
+          <h6 class="text-info">HelloControllerTests.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.controller;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+/**
+ * Controller class Test
+ * @author Wanchopi
+ *
+ */
+@SpringBootTest
+@AutoConfigureMockMvc
+public class HelloControllerTest {
+  
+  @Autowired
+  private MockMvc mvc;
+  
+  @Test
+  public void getHello() throws Exception {
+    mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(equalTo("Greetings from Spring Boot!")));
+  }
+
+}
+            </code></pre>
+          </div>
+          <p>Con la anotación <mark>@SpringBootTest</mark> se crea todo el contexto de la aplicación, y con <mark>@AutoConfigureMockMvc</mark>
+          inyecta una instancia MockMvc</p>
+          <p><mark>@Test</mark> como a cualquier método que probemos, nada nuevo bajo el sol y dentro del método un código que iremos desgranando en sucesivos tutoriales.</p>
+          <hr>
+          <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+          <ul>
+            <li>Eclipse Version: 2019-03 (4.11.0)</li>
+            <li>Java SE-1.8 (jdk1.8.0)</li>
+            <li>Spring Boot 2.2.4</li>
+            <li>Spring MVC 5.1.5</li>
+          </ul>
+          <!-- nav -->
+          <div class="row" style="margin-left: 20px;">
+            <div class="col-lg-6">
+              <a href="springmvc5-data-jpa-hibernate.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+              <p style="margin-left: 25px; text-decoration: underline;">Spring Data JPA</p>
+            </div>
+            <div class="col-lg-6">
+              <a href="springboot2-thymeleaf.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+              <p style="text-decoration: underline;">Spring Boot Thymeleaf</p>
+            </div>
+          </div>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

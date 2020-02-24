@@ -1,0 +1,67 @@
+body {
+	font-family: 'Chilanka', cursive;
+}
+body h1, h2, h3, h4, h5, h6 {
+
+}
+body .main-title {
+	text-align: center;
+	margin: 50px 0 25px 0;
+}
+body .sub-title {
+	margin: 25px 0 25px 0;
+	padding-top: 2px;
+	padding-left: 4px;
+	padding-top: 2px;
+}
+body .previous-next {
+	margin-top: 50px;
+	margin-left: 170px;
+	margin-bottom: 50px;
+}
+body .mycode {
+	font-size: smaller;
+}
+img {
+	margin-bottom: 20px;
+}
+.navbar {
+	margin-bottom: 20px;
+}
+.nav-link {
+	text-transform: uppercase;
+	font-family: 'Quicksand', sans-serif;
+}
+ #project-list {
+	list-style: none;
+	font-style: italic;
+	
+}
+#project-list li a {
+	text-decoration: none;
+}
+.click-here {
+	margin-left: 20px;
+	color: #424242;
+}
+.click-here:hover {
+	background-color: #424242;
+	color: white;
+}
+.underlined-text {
+	text-decoration: underline;
+}
+.a-about {
+	text-align: center;
+	margin-top: 100px;
+	margin-bottom: 100px;
+	font-size: large;
+}
+footer {
+	text-align: center;
+	font-style: italic;
+}
+footer .my-footer-css {
+	color: gray;
+}
+

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - validar form spring MVC</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img src="../images/logo.png" class="img-fluid" alt="logo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+          <h2 class="sub-title bg-danger text-white" align="center">Validar formulario con Spring MVC</h2>
+          <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+          <p>Seguimos con los formularios con Spring y ahora nos toca validar un formulario, o sea, <a href="https://github.com/wanchopi/springmvc5-form-val/" target="_blank">este proyecto disponible en GitHub</a> es una continuación del anterior <a href="form_springmvc.html">Formulario con Spring MVC</a>.</p>
+          <h4 class="sub-title bg-secondary text-white">El Proyecto</h4>
+          <h5>La estructura del proyecto</h5>
+          <img src="../images/spring-form-val.png" class="img-fluid" alt="estructura">
+          <p>Como siempre empezamos con las dependencias necesarias para llevar a cabo el proyecto.</p>
+          <p>Simplemente hay que añadir una dependencia respecto a las del tutorial anterior.</p>
+          <h5>Las dependencias</h5>
+          <h6 class="text-info">pom.xml</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+    ...
+    &lt;!-- Hibernate Validator --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+        &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+        &lt;version&gt;${hibernate.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    ...
+            </code></pre>
+          </div>
+          <p>La especificación <mark>Bean Validation</mark> define un conjunto de anotaciones que proporcionan una colección de restricciones genéricas y básicas y que podemos comprobar en la <a href="https://docs.jboss.org/hibernate/beanvalidation/spec/2.0/api/javax/validation/constraints/package-summary.html" target="_blank">documentación.</a></p>
+          <h5>La Configuración</h5>
+          <p>Las clases de configuración son exactamente iguales a las del <a href="./form_springmvc.html#file-config-form">proyecto anterior</a> por lo que no vamos a extendernos mas.</p>
+          <h5>El Modelo</h5>
+          <p>La misma clase que el anterior proyecto pero con las anotaciones correspondientes para validar los campos.</p>
+          <h6 class="text-info">Student.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.model;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
+/**
+ * Entity
+ * @author Wanchopi
+ *
+ */
+public class Student {
+  
+  @NotNull(message = "Campo requerido")
+  @Size(min = 3, max = 25, message = "entre 3 y 25 caracteres")
+  private String userName;
+  
+  @NotEmpty(message = "Campo requerido")
+  @Email(message = "Introduzca un email válido")
+  private String email;
+  
+  @NotNull(message = "Campo requerido")
+  @Pattern(regexp = "^(?=\\w*\\d)(?=\\w*[A-Z])(?=\\w*[a-z])\\S{4,6}$", message=""
+      + "La contraseña debe de tener entre 4 y 8 caracteres, \n"
+      + "al menos un dígito, al menos una mayúscula, al menos una minúscula.\n"
+      + "No puede contener otros símbolos")
+  private String password;
+  
+  @NotNull (message = "Campo requerido")
+  private String gender;
+  
+  @NotNull(message = "Campo requerido")
+  private String country;
+  
+  private boolean receivePaper;
+  
+  @NotEmpty(message = "No has seleccionado ningún lenguaje de programación")
+  private String[] favoriteFrameworks;
+  
+  
+  /**
+   * @return the email
+   */
+  public String getEmail() {
+    return email;
+  }
+  /**
+   * @param email the email to set
+   */
+  public void setEmail(String email) {
+    this.email = email;
+  }
+  /**
+   * @return the userName
+   */
+  public String getUserName() {
+    return userName;
+  }
+  /**
+   * @param userName the userName to set
+   */
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+    return password;
+  }
+  /**
+   * @param password the password to set
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
+  /**
+   * @return the country
+   */
+  public String getCountry() {
+    return country;
+  }
+  /**
+   * @param country the country to set
+   */
+  public void setCountry(String country) {
+    this.country = country;
+  }
+  /**
+   * @return the gender
+   */
+  public String getGender() {
+    return gender;
+  }
+  /**
+   * @param gender the gender to set
+   */
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+  /**
+   * @return the receivePaper
+   */
+  public boolean isReceivePaper() {
+    return receivePaper;
+  }
+  /**
+   * @param receivePaper the receivePaper to set
+   */
+  public void setReceivePaper(boolean receivePaper) {
+    this.receivePaper = receivePaper;
+  }
+  /**
+   * @return the favoriteFrameworks
+   */
+  public String[] getFavoriteFrameworks() {
+    return favoriteFrameworks;
+  }
+  /**
+   * @param favoriteFrameworks the favoriteFrameworks to set
+   */
+  public void setFavoriteFrameworks(String[] favoriteFrameworks) {
+    this.favoriteFrameworks = favoriteFrameworks;
+  }
+  
+}
+            </code></pre>
+          </div>
+          <p>Y aquí un enlace a la página oficial <a href="http://hibernate.org/validator/" target="_blank">Hibernate Validator</a></p>
+          <h5>El Controlador</h5>
+          <h6 class="text-info">StudentController.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="Java">
+package com.wanchopi.spring.controller;
+
+
+import javax.validation.Valid;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.wanchopi.spring.model.Student;
+
+
+/**
+ * Spring MVC Controller
+ * @author Wanchopi
+ *
+ */
+@Controller
+public class StudentController {
+  
+  protected final Log logger = LogFactory.getLog(getClass());
+  
+  @Value("${countries}")
+  private String countries; // load field countries of properties
+  
+  @Value("${frameworks}")
+  private String frameworks;  // load field frameworks of properties
+  
+  @ModelAttribute("countryList")
+  public String[] loadCountries() {
+    String[] items = this.countries.split(","); // converts a comma-separated string into an array
+    return items; 
+  }
+  
+  @ModelAttribute("frameworkList")
+  public String[] loadFrameworks() {
+    String[] items = this.frameworks.split(","); // convers a comma-separated string into an array
+    return items;
+  }
+  
+  @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+  
+  @GetMapping("/")
+  public ModelAndView student() {
+    logger.info("Returning form view");
+    Student student = new Student();
+    ModelAndView mav = new ModelAndView("index", "student", student);
+    return mav;
+  }
+  
+
+  @PostMapping("/save")
+  public String saveForm(@Valid @ModelAttribute("student") Student student,
+      BindingResult theBindingResult) {
+    
+    if (theBindingResult.hasErrors()) {
+      return "index";
+    }
+    else {
+      return "success";
+    }
+  }
+
+}              
+            </code></pre>
+          </div>
+          <p>El método <mark>saveForm</mark> acepta dos argumentos: (traducción de la página oficial de SPring)</p>
+          <ul>
+            <li>Un objeto <mark>student</mark> marcado con <mark>@Valid</mark> para recoger los atributos rellenados en el formulario.</li>
+            <li>Un objeto <mark>bindingResult</mark> para que pueda comprobar y recuperar los errores de validación.</li>
+          </ul>
+          <p>Os remito a la página <a href="https://spring.io/guides/gs/validating-form-input/" target="_blank">oficial de Spring</a> para mas información.</p>
+          <h5>Las Vistas</h5>
+          <p>El <mark>index.jsp</mark> es igual que el del anterior proyecto al que le añadimos una etiqueta <mark>&lt;form:errors /&gt;</mark> mas por campo que queramos validar para recoger los errores. Por ejemplo el campo nombre quedaría así:</p>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!-- user name --&gt;
+&lt;div class="form-group"&gt;
+    &lt;label for="username" class="col-md-3 control-label font-weight-bold"&gt;Nombre&lt;/label&gt;
+    &lt;div class="col-md-9"&gt;
+      &lt;form:input path="userName" type="text" cssClass="form-control" /&gt;
+      &lt;form:errors path="userName" cssClass="errors" /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;            
+            </code></pre>
+          </div>
+          <p style="margin-bottom: 30px;">Entonces, en el index presentamos el formulario</p>
+          <img src="../images/run2.png" class="img-fluid" alt="aplicación">
+          <p style="margin-top: 20px; margin-bottom: 20PX;">Que si no cubrimos correctamente, el controlador nos devuelve al index con los mensajes de error oportunos.</p>
+          <img src="../images/run-errors.png" class="img-fluid" alt="aplicación">
+          <p>La vista <mark>success.jsp</mark> si que no cambia nada respecto a la del anterior proyecto.</p>
+          <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+          <ul>
+            <li>Eclipse Version: 2019-03 (4.11.0)</li>
+            <li>jdk 1.8.0</li>
+            <li>Maven 3.6</li>
+            <li>Spring MVC 5.1.5</li>
+            <li>bootstrap 4.3.1</li>
+            <li>Server Tomcat v8</li>
+          </ul>
+          <!-- nav -->
+          <div class="row" style="margin-left: 20px;">
+            <div class="col-lg-6">
+              <a href="./form_springmvc.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+              <p style="margin-left: 25px; text-decoration: underline;"> Formulario con Spring </p>
+            </div>
+            <div class="col-lg-6">
+              <a href="./springmvc5-i18n.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+              <p style="text-decoration: underline;">Internacionalización i18n</p>
+            </div>
+          </div>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

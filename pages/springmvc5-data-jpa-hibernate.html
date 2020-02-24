@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - Spring Data JPA / Hibernate</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img src="../images/logo.png" class="img-fluid" alt="logo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-md-12 mx-auto">
+                <h2 class="sub-title bg-danger text-white" align="center">Spring MVC - Spring Data JPA - Hibernate</h2>
+                <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+                <p>En el pasado pasado tutorial vimos como integrar <strong>Spring</strong> e <strong>Hibernate</strong>. Es el momento de dar un paso mas y comprobar como <strong>Spring</strong> nos hace la vida más fácil a la hora de trabajar con la persistencia de datos, para ello vamos a ver en este tutorial <strong>Spring Data JPA</strong>.</p>
+                <p>Os podéis descargar el proyecto de github, <a href="https://github.com/wanchopi/springmvc5-data-jpa-hibernate">Spring Data JPA</a>.</p>
+                <p>Podemos ver en la estructura de carpetas del proyecto la clase <mark>ResourceNotFoundException</mark>. Aunque el manejo de excepciones no lo veremos hasta llegar a <strong>spring boot</strong>, adelantamos aquí una clase para el manejo de excepciones en la capa de servicio de forma que si no se puede llevar a cabo alguna acción (delete, get, edit) el programa avise mediante una página informativa y podamos ir a la página principal y poder seguir "navegando".</p>
+                <h4 class="sub-title bg-secondary text-white">El Proyecto</h4>
+                <h5>La estructura del proyecto</h5>
+                <img src="../images/spring-jpa-hibernate.png" class="img-fluid" alt="estructura">
+                <p>Como dije en al capítulo anterior, antes de seguir, recomiendo que os detengáis en el archivo <mark>database.properties</mark> para estudiarlo un poco.
+                Todas las lineas están comentadas para una mayor compresión del mismo, en cualquier caso, al final del archivo dejo un par de links que me parecen interesantes y explican todo esto.</p>
+                <h6 class="text-info">database.properties</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="properties">
+# MySQL configuration
+# ==================
+
+# Indica el driver/lib para conectar java a mysql
+mysql.driver=com.mysql.jdbc.Driver
+# Url donde esta el servicio de tu mysql y el nombre de la base de datos
+mysql.url=jdbc:mysql://localhost:3306/testdb
+#Usuario para tu base de datos 
+mysql.username=root
+#Contrasena para tu base de datos 
+mysql.password=
+
+# Hibernate configuration
+# ======================
+
+# Esta propiedad hace que Hibernate genere el SQL optimizado para la base de datos elegida.
+hibernate.dialect=org.hibernate.dialect.MySQLDialect
+# Indica que debe mostrar el log de las consultas sql ejecutadas, bueno para depurar
+hibernate.show_sql=true
+# update the schema (para el desarrollo de la aplicación, no para producción)
+hibernate.hbm2ddl.auto=update
+# Formatea la sentencia SQL generada para que sea más legible. (Ocupa más espacio en la pantalla).
+hibernate.format_sql=true
+
+# C3P0 configuration
+# ==================
+
+# Especifica el número mínimo de conexiones que debe mantener en un momento dado. Por defecto, mantendrá al menos tres conexiones.
+hibernate.c3p0.min_size=5
+# Especifica el número máximo de conexiones que puede mantener en un momento dado. Por defecto, mantendrá un máximo de 15 conexiones.
+hibernate.c3p0.max_size=20
+# Especifica cuántas conexiones debería intentar adquirir si el grupo se queda sin conexiones disponibles. 
+# Por defecto, intentará adquirir tres conexiones nuevas.
+hibernate.c3p0.acquire_increment=5
+# Especifica el número de segundos que se mantendrá una conexión no utilizada antes de ser descartada. 
+# Por defecto, las conexiones nunca expirarán en el pool.
+hibernate.c3p0.timeout=1800
+# El número de declaraciones preparadas se almacenará en la memoria caché
+hibernate.c3p0.max_statements=150
+                    </code></pre>
+                </div>
+                <ul>
+                    <li><a href="https://docs.jboss.org/hibernate/orm/3.3/reference/es-ES/html/session-configuration.html" target="_blank">docs.jboss.org</a></li>
+                    <li><a href="https://www.baeldung.com/hibernate-c3p0" target="_blank">www.baeldung.com</a></li>
+                </ul>
+                <h5>Las dependencias</h5>
+                <h6 class="text-info">pom.xml</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="XML">
+&lt;dependencies&gt;
+  &lt;!-- Spring --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-webmvc&lt;/artifactId&gt;
+      &lt;version&gt;5.1.5.RELEASE&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+      &lt;version&gt;${spring.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-orm&lt;/artifactId&gt;
+      &lt;version&gt;${spring.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- Spring-data-jpa --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.data&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-data-jpa&lt;/artifactId&gt;
+      &lt;version&gt;2.1.5.RELEASE&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-test&lt;/artifactId&gt;
+      &lt;version&gt;${spring.version}&lt;/version&gt;
+      &lt;scope>test&lt;/scope&gt;
+  &lt;/dependency&gt;
+  &lt;!-- Hibernate --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+      &lt;artifactId&gt;hibernate-entitymanager&lt;/artifactId&gt;
+      &lt;version&gt;${hibernate.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- hibernate-c3p0 --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+      &lt;artifactId&gt;hibernate-c3p0&lt;/artifactId&gt;
+      &lt;version&gt;${hibernate.version}&lt;/version&gt;
+  &lt;/dependency&gt; 
+  &lt;!-- Hibernate Validator --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+      &lt;artifactId&gt;hibernate-validator&lt;/artifactId&gt;
+      &lt;version&gt;${hibernate.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  &lt;!-- mysql-connector-java --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+      &lt;version&gt;8.0.15&lt;/version&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+  &lt;/dependency&gt;
+  &lt;!-- lombok --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+      &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+      &lt;version&gt;1.16.16&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;
+  &lt;/dependency&gt;
+  &lt;!-- javax.servlet --&gt;
+  &lt;dependency&gt;   
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt;   
+      &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;    
+      &lt;version&gt;3.1.0&lt;/version&gt;
+      &lt;scope&gt;provided&lt;/scope&gt;   
+  &lt;/dependency&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet.jps&lt;/groupId&gt; 
+      &lt;artifactId&gt;javax.servlet.jsp-api&lt;/artifactId&gt; 
+      &lt;version&gt;2.3.1&lt;/version&gt; 
+      &lt;scope&gt;provided&lt;/scope&gt; 
+  &lt;/dependency&gt;
+  &lt;!-- jstl --&gt;
+  &lt;dependency>  
+      &lt;groupId&gt;javax.servlet&lt;/groupId&gt; 
+      &lt;artifactId&gt;jstl&lt;/artifactId&gt; 
+      &lt;version&gt;1.2&lt;/version&gt;  
+  &lt;/dependency&gt;
+  &lt;!-- junit --&gt;
+  &lt;dependency&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;4.12&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;
+                    </code></pre>
+                </div>
+                <h5>La Configuración</h5>
+                <p>Como siempre configuramos el proyecto con <strong>Java Config</strong>.</p>
+                <h6 class="text-info">SpringWebAppInitializer.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+ package com.wanchopi.spring.config;
+
+
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+/**
+ * Init app
+ * @author Wanchopi
+ *
+ */
+public class SpringWebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+  @Override
+  protected Class&lt;?&gt;[] getRootConfigClasses() {
+    return new Class&lt;?&gt;[] { PersistenceJPAConfig.class};
+  }
+
+  @Override
+  protected Class&lt;?&gt;[] getServletConfigClasses() {
+    return new Class&lt;?&gt;[] { WebMvcConfig.class};
+  }
+
+  @Override
+  protected String[] getServletMappings() {
+    return new String[] { "/" };
+  }
+
+}                       
+                    </code></pre>
+                </div>
+                <h6 class="text-info">WebMvcConfig.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.config;
+
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+
+/**
+ * Configure Spring MVC
+ * @author Wanchopi
+ *
+ */
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.wanchopi.spring")
+public class WebMvcConfig implements WebMvcConfigurer {
+    
+    @Bean(name = "viewResolver")
+    public InternalResourceViewResolver getViewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        
+        viewResolver.setPrefix("/WEB-INF/views/");
+        viewResolver.setSuffix(".jsp");
+        
+        return viewResolver;
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/public/**").addResourceLocations("/public/"); 
+    }
+    
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        //messageSource.setCacheSeconds(1); 
+        return messageSource;
+    }
+
+}                        
+                    </code></pre>
+                </div>
+                <h6 class="text-info">PersistenceJPAConfig.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.config;
+
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+@Configuration
+@EnableTransactionManagement
+@PropertySource({"classpath:database.properties"})
+@ComponentScan({"com.wanchopi.spring"})
+@EnableJpaRepositories({"com.wanchopi.spring.repository"})
+public class PersistenceJPAConfig {
+  
+  @Autowired
+  private Environment env;
+
+  /**
+   * 
+   */
+  public PersistenceJPAConfig() {
+    super();
+  }
+  
+  @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = 
+            new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(dataSource());
+        entityManagerFactoryBean.setPackagesToScan(new String[] {
+            "com.wanchopi.spring.entity"
+        });
+
+        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
+        entityManagerFactoryBean.setJpaProperties(hibernateProperties());
+
+        return entityManagerFactoryBean;
+    }
+  
+  private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        // Setting Hibernate properties
+        properties.put("hibernate.dialect", env.getRequiredProperty("hibernate.dialect"));
+        properties.put("hibernate.show_sql", env.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hibernate.format_sql", env.getRequiredProperty("hibernate.format_sql"));
+        properties.put("hibernate.hbm2ddl.auto", env.getRequiredProperty("hibernate.hbm2ddl.auto"));
+        // Setting C3P0 properties
+        properties.put("hibernate.c3p0.min_size", env.getProperty("hibernate.c3p0.min_size"));
+        properties.put("hibernate.c3p0.max_size", env.getProperty("hibernate.c3p0.max_size"));
+        properties.put("hibernate.c3p0.acquire_increment", env.getProperty("hibernate.c3p0.acquire_increment"));
+        properties.put("hibernate.c3p0.timeout", env.getProperty("hibernate.c3p0.timeout"));
+        properties.put("hibernate.c3p0.max_statements", env.getProperty("hibernate.c3p0.max_statements"));
+        return properties;
+    }
+  
+  @Bean
+  public DataSource dataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName(env.getProperty("mysql.driver"));
+    dataSource.setUrl(env.getProperty("mysql.url"));
+    dataSource.setUsername(env.getProperty("mysql.username"));
+    dataSource.setPassword(env.getProperty("mysql.password"));
+    return dataSource;
+  }
+  
+  @Bean
+    public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
+        final JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+        return transactionManager;
+    }
+  
+  @Bean
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
+        return new PersistenceExceptionTranslationPostProcessor();
+    }
+
+}
+                    </code></pre>
+                </div>
+                <p>Como puedes ver, estamos usando la anotación <mark>@PropertySource</mark> para leer las propiedades JDBC, Hibernate y C3P0 del archivo <mark>database.properties</mark>, y por otra parte tenemos que anotar la clase con la anotación <mark>@EnableTransactionManagement</mark> para habilitar la gestión de transacciones.</p>
+                <h5>El Modelo</h5>
+                <h6 class="text-info">Employee.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.Email;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Employed entity
+ * 
+ * @author Wanchopi
+ *
+ */
+@Entity
+@Table(name = "employees")
+public class Employee {
+    
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter
+    private long id;
+    
+    @Column(name = "first_name")
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Getter @Setter
+    private String firstName;
+    
+    @Column(name = "last_name")
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Getter @Setter
+    private String lastName;
+    
+    @Column(name = "email")
+    @NotNull
+    @Email
+    @Getter @Setter
+    private String email;
+
+}
+                    </code></pre>
+                </div>
+                <h5>El Controlador</h5>
+                <h6 class="text-info">EmployeeController.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.controller;
+
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.wanchopi.spring.entity.Employee;
+import com.wanchopi.spring.exception.ResourceNotFoundException;
+import com.wanchopi.spring.service.IEmployeeService;
+
+/**
+ * Main controller
+ * 
+ * @author Wanchopi
+ *
+ */
+@Controller
+public class EmployeeController {
+  
+  @Autowired
+  private IEmployeeService employeeService;
+  
+  @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+  
+  @RequestMapping("/")
+  public String listEmployees(Model model) {
+    List&lt;Employee&gt; employees = employeeService.getAllEmployees();
+    model.addAttribute("employees", employees);
+    return "index";
+  }
+  
+  @GetMapping("/form")
+  public String showFormForAdd(Model model) {
+    Employee employee = new Employee();
+    model.addAttribute("employee", employee);
+    return "employee-form";
+  }
+  
+  @PostMapping("/save")
+  public String saveEmployee(@Valid @ModelAttribute("employee") Employee employee,
+      BindingResult theBindingResult) {
+    if (theBindingResult.hasErrors()) {
+      return "employee-form";
+    } else {
+      employeeService.saveEmployee(employee);
+      return "redirect:/";
+    }
+  }
+  
+  @GetMapping("/delete")
+  public String deleteOne(@RequestParam("id") long id) throws ResourceNotFoundException {
+    employeeService.deleteEmployee(id);
+    return "redirect:/";
+  }
+  
+  @GetMapping("/update")
+  public String showFormForUpdate(@RequestParam("id") long id, 
+      Model model) throws ResourceNotFoundException {
+    Employee employee = employeeService.getEmployeeById(id);
+    model.addAttribute("employee", employee);
+    return "employee-update-form";
+  }
+    
+  @PostMapping("/search")
+  public ModelAndView search(@RequestParam String keyword) throws ResourceNotFoundException {
+    ModelAndView mav = new ModelAndView("search");
+    
+    List&lt;Employee&gt; result = employeeService.search(keyword);
+    mav.addObject("result", result);
+    
+    return mav;
+  }
+  
+  @ExceptionHandler(ResourceNotFoundException.class)
+  private String handleResourceNotFoundException(ResourceNotFoundException e) {
+    return "error";
+  }
+  
+}
+                    </code></pre>
+                </div> 
+                <p>Observamos la inyección de dependencia de una interface, <mark>EmployeeService</mark>, donde están definidas las operaciones básicas, y como novedad tenemos el método privado <mark>handleResourceNotFoundException()</mark> anotado con <mark>@ExceptionHandle</mark>. Los métodos anotados de esta manera se encargarán de manejar las excepciones. En este caso simplemente manda al usuario a una página de error informando de que no se ha podido realizar la acción solicitada.</p>
+                <h5>El Servicio</h5>
+                <h6 class="text-info">IEmployeeService.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.service;
+
+import java.util.List;
+
+import com.wanchopi.spring.entity.Employee;
+
+/**
+ * Service
+ * @author Wanchopi
+ *
+ */
+public interface IEmployeeService {
+    
+    public List&lt;Employee&gt; getAllEmployees();
+    public void saveEmployee(Employee employee);
+    public Employee getEmployeeById(long id) throws ResourceNotFoundException;
+    public void deleteEmployee(long id) throws ResourceNotFoundException;
+    public void deleteAll() throws ResourceNotFoundException;
+    public List&lt;Employee&gt; search(String keyword);
+
+}                        
+                    </code></pre>
+                </div>
+                <p>Y la clase que implementa la interface que a su vez presenta una inyección de dependencia de una interface que a su vez es implementada por una clase que es la responsable de proveer las operaciones CRUD, esto es un <em><strong>repositorio</strong></em>. Es en la clase repositorio donde está el trabajo de <strong>spring-data-jpa</strong> como veremos.</p>
+                <h6 class="text-info">EmployeeService.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.wanchopi.spring.entity.Employee;
+import com.wanchopi.spring.exception.ResourceNotFoundException;
+import com.wanchopi.spring.repository.EmployeeRepository;
+
+/**
+ * Class that implements the IEmployeeService interface 
+ * @author Wanchopi
+ *
+ */
+@Service
+public class EmployeeService implements IEmployeeService {
+  
+  @Autowired
+  private EmployeeRepository employeeRepository;
+
+  @Override
+  @Transactional
+  public List&lt;Employee&gt; getAllEmployees() {
+    List&lt;Employee&gt; employees = employeeRepository.findAll();
+    return employees;
+  }
+
+  @Override
+  @Transactional
+  public void saveEmployee(Employee employee) {
+    employeeRepository.save(employee);
+  }
+
+  @Override
+  @Transactional
+  public Employee getEmployeeById(long id) throws ResourceNotFoundException {
+    return employeeRepository.findById(id).orElseThrow(
+        () -> new ResourceNotFoundException(id));
+  }
+
+  @Override
+  @Transactional
+  public void deleteEmployee(long id) throws ResourceNotFoundException {
+    employeeRepository.deleteById(id);
+  }
+
+  @Override
+  @Transactional
+  public void deleteAll() throws ResourceNotFoundException {
+    employeeRepository.deleteAll();
+  }
+
+  @Override
+  @Transactional
+  public List&lt;Employee&gt; search(String keyword) {
+    return employeeRepository.search(keyword);
+  }
+
+}                        
+                    </code></pre>
+                </div>
+                <p>Estamos utilizando la anotación <mark>@Transactiona</mark>l que se aplica a la capa de servicio para el soporte de transacciones. La anotación <mark>@Service</mark> se utiliza para anotar las clases de implementación de la capa de servicios.</p>
+                <h5>El Repositoriio</h5>
+                <h6 class="text-info">EmployeeRepository.java</h6>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.wanchopi.spring.entity.Employee;
+
+/**
+ * Repository
+ * @author Wanchopi
+ *
+ */
+@Repository
+public interface EmployeeRepository extends JpaRepository&lt;Employee, Long&gt; {
+  
+  @Query(value = "SELECT e FROM Employee e WHERE e.firstName LIKE '%' || :keyword || '%'"
+      + "OR e.email LIKE '%' || :keyword || '%' OR e.lastName LIKE '%' || :keyword || '%'")
+  public List&lt;Employee&gt; search(@Param("keyword") String keyword);
+
+}
+                    </code></pre>
+                </div>
+                <p>Olvidemonos del único método de esta clase (interface) pues este es para un autocompletado que veremos con <strong>spring boot</strong> 
+                Y pongamos que la clase está así:</p>
+                <div class="col-lg-12 mycode">
+                    <pre><code class="Java">
+package com.wanchopi.spring.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.wanchopi.spring.entity.Employee;
+
+/**
+ * Repository
+ * @author Wanchopi
+ *
+ */
+@Repository
+public interface EmployeeRepository extends JpaRepository&lt;Employee, Long&gt; { }
+                    </code></pre>
+                </div>
+                <p>Simplemente anotando la clase con <mark>@Repository</mark> y extendiendo la interface <mark>JpaRepository&lt;T, ID&gt;</mark> tenemos todas las operaciones básicas sin añadir ni una sola linea de código.</p>
+                <p><strong>JpaRepository</strong> es una extensión específica del Repositorio del JPA. Contiene el API completo de <strong>CrudRepository</strong> y <strong>PagingAndSortingRepository</strong>. Así que contiene el API para operaciones básicas de CRUD y también el API para paginación y clasificación.</p>
+                <P><a href="https://www.baeldung.com/spring-data-repositories" target="_blank">Aquí encontrareis mas información al respecto</a>
+                <h5>Las Vistas</h5>
+                <h6 class="text-info">index.jsp</h6>
+                  <div class="col-lg-12 mycode">
+                    <pre><code class="html">
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;index&lt;/title&gt;
+&lt;link rel="stylesheet" href="public/css/bootstrap.min.css"&gt;
+&lt;link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"&gt;
+&lt;link rel="stylesheet" href="public/css/mystyle.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container-fluid" align="center"&gt;
+    &lt;!-- nav --&gt;
+    &lt;nav class="navbar navbar-light bg-light"&gt;
+      &lt;a href="&lt;c:url value="/"/&gt;"&gt;&lt;img alt="logo" src="public/images/spring_50x50.png"&gt;&lt;/a&gt;
+      &lt;a href="form" class="btn btn-outline-success my-2 my-sm-0"&gt;Save new employee&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;!-- header --&gt;
+    &lt;div class="container"&gt;
+      &lt;div class="row"&gt;
+        &lt;div class="col-lg-12" align="center"&gt;
+          &lt;img alt="logo" src="public/images/logo.png"&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="main"&gt;
+      &lt;div class="col-lg-9" style="margin-top: 50px;"&gt;
+        &lt;h2 class="bg-primary text-white"&gt;List of employees&lt;/h2&gt;
+        &lt;table class="table"&gt;
+          &lt;thead class="thead-dark"&gt;
+            &lt;tr align="center"&gt;
+              &lt;th scope="col"&gt;ID&lt;/th&gt;
+              &lt;th scope="col"&gt;NAME&lt;/th&gt;
+              &lt;th scope="col"&gt;E-MAIL&lt;/th&gt;
+              &lt;th scope="col"&gt;EDIT&lt;/th&gt;
+              &lt;th scope="col"&gt;DELETE&lt;/th&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;c:forEach items="${employees}" var="employee"&gt;
+              &lt;tr align="center"&gt;
+                &lt;td&gt;${employee.id}&lt;/td&gt;
+                &lt;td&gt;${employee.firstName} ${employee.lastName}&lt;/td&gt;
+                &lt;td&gt;${employee.email}&lt;/td&gt;
+                &lt;td&gt;&lt;a href="update?id=${employee.id}"&gt;&lt;i class="fa fa-edit"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;a href="delete?id=${employee.id}"&gt;&lt;i class="fa fa-times"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/c:forEach&gt;
+          &lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- jQuery core JavaScript --&gt;
+    &lt;script src="public/js/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;!-- Bootstrap core JavaScript --&gt;
+    &lt;script src="public/js/bootstrap.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+                  </div>
+                  <p>El index presenta una lista de los empleados con los botones correspondientes para llevar a cabo las operaciones básicas (guardar, borrar, editar).</p>
+                  <img src="../images/run-spring-hibernate.png" class="img-fluid" alt="run app">
+                  <h6 class="text-info">employee-form.jsp</h6>
+                  <div class="col-lg-12 mycode">
+                    <pre><code class="html">
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %&gt;
+&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;employee form&lt;/title&gt;
+&lt;link rel="stylesheet" href="public/css/bootstrap.min.css"&gt;
+&lt;link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"&gt;
+&lt;link rel="stylesheet" href="public/css/mystyle.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container-fluid" align="center"&gt;
+    &lt;!-- nav --&gt;
+    &lt;nav class="navbar navbar-light bg-light"&gt;
+      &lt;a href="&lt;c:url value="/"/&gt;"&gt;&lt;img alt="logo" src="public/images/spring_50x50.png"&gt;&lt;/a&gt;
+      &lt;a href="form" class="btn btn-outline-success my-2 my-sm-0"&gt;Save new employee&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;div class="col-lg-6" style="margin-bottom: 50px"&gt;
+      &lt;h2 class="bg-primary text-white"&gt;Employee Manager&lt;/h2&gt;
+    &lt;/div&gt;
+    &lt;div class="col-lg-6" style="margin-top: 50px;"&gt;
+      &lt;div class="card" align="left"&gt;
+        &lt;h5 class="card-title p-3 mb-2 text-light bg-dark"&gt;New Employee&lt;/h5&gt;
+        &lt;div class="card-body"&gt;
+          &lt;form:form action="save" method="post" modelAttribute="employee" cssClass="form-horizontal"&gt;
+            &lt;!-- first name --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="firstName" class="col-md-3 control-label font-weight-bold"&gt;First Name&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="firstName" type="text" cssClass="form-control" /&gt;
+                  &lt;form:errors path="firstName" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;!-- last name --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="lastName" class="col-md-3 control-label font-weight-bold"&gt;Last Name&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="lastName" type="text" cssClass="form-control" /&gt;
+                  &lt;form:errors path="lastName" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;!-- email --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="email" class="col-md-3 control-label font-weight-bold"&gt;Email&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="email" type="email" cssClass="form-control" /&gt;
+                  &lt;form:errors path="email" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class="form-group"&gt;
+              &lt;!-- Button --&gt;
+              &lt;div class="col-md-offset-3 col-md-9"&gt;
+                &lt;form:button type="Submit" class="btn btn-primary"&gt;Save&lt;/form:button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/form:form&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- jQuery core JavaScript --&gt;
+    &lt;script src="public/js/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;!-- Bootstrap core JavaScript --&gt;
+    &lt;script src="public/js/bootstrap.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+                  </div>  
+                  <p>Esta vista es un simple formulario para introducir en la base de datos un nuevo empleado.</p>
+                  <img src="../images/run-spring-hibernate-form.png" class="img-fluid" alt="run app">
+                  <h6 class="text-info">employee-update-form.jsp</h6>
+                  <div class="col-lg-12 mycode">
+                    <pre><code class="html">
+&lt;%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;employee update form&lt;/title&gt;
+&lt;link rel="stylesheet" href="public/css/bootstrap.min.css"&gt;
+&lt;link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"&gt;
+&lt;link rel="stylesheet" href="public/css/mystyle.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container-fluid" align="center"&gt;
+    &lt;!-- nav --&gt;
+    &lt;nav class="navbar navbar-light bg-light"&gt;
+      &lt;a href="&lt;c:url value="/"/&gt;"&gt;&lt;img alt="logo" src="public/images/spring_50x50.png"&gt;&lt;/a&gt;
+      &lt;a href="form" class="btn btn-outline-success my-2 my-sm-0"&gt;Save new employee&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;div class="col-lg-10" style="margin-bottom: 100px"&gt;
+      &lt;h1&gt;Employee Manager&lt;/h1&gt;
+    &lt;/div&gt;
+    &lt;div class="col-lg-6" style="margin-top: 50px;"&gt;
+      &lt;div class="card" align="left"&gt;
+        &lt;h5 class="card-title p-3 mb-2 text-light bg-dark"&gt;Update employee&lt;/h5&gt;
+        &lt;div class="card-body"&gt;
+          &lt;form:form action="save" method="post" modelAttribute="employee" cssClass="form-horizontal"&gt;
+            &lt;!-- ID --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="id" class="sr-only"&gt;ID&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="id" type="text" cssClass="form-control" readonly="true"/&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;!-- first name --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="firstName" class="col-md-3 control-label font-weight-bold"&gt;First Name&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="firstName" type="text" cssClass="form-control" /&gt;
+                  &lt;form:errors path="firstName" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;!-- last name --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="lastName" class="col-md-3 control-label font-weight-bold"&gt;Last Name&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="lastName" type="text" cssClass="form-control" /&gt;
+                  &lt;form:errors path="lastName" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;!-- email --&gt;
+              &lt;div class="form-group"&gt;
+                &lt;label for="email" class="col-md-3 control-label font-weight-bold"&gt;Email&lt;/label&gt;
+                &lt;div class="col-md-9"&gt;
+                  &lt;form:input path="email" type="email" cssClass="form-control" /&gt;
+                  &lt;form:errors path="email" cssClass="errors" /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div class="form-group"&gt;
+              &lt;!-- Button --&gt;
+              &lt;div class="col-md-offset-3 col-md-9"&gt;
+                &lt;form:button type="Submit" class="btn btn-primary"&gt;Save&lt;/form:button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/form:form&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+    &lt;!-- jQuery core JavaScript --&gt;
+    &lt;script src="public/js/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;!-- Bootstrap core JavaScript --&gt;
+    &lt;script src="public/js/bootstrap.min.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+                    </code></pre>
+                  </div>
+                  <p>Y la última es un formulario para poder editar a los empleados cuando sea necesario.</p>
+                  <img src="../images/run-spring-hibernate-form-update.png" class="img-fluid" alt="run app">
+                  <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+                <ul>
+                    <li>Eclipse Version: 2019-03 (4.11.0)</li>
+                    <li>jdk 1.8</li>
+                    <li>Maven 3.6</li>
+                    <li>Spring MVC 5.1.5</li>
+                    <li>Hibernate 5.4.1. Final</li>
+                    <li>MySQL 8.0.15</li>
+                    <li>bootstrap 4.3.1</li>
+                    <li>Apache Tomcat v8.5</li>
+                </ul>
+                <!-- nav -->
+                <div class="row" style="margin-left: 20px;">
+                    <div class="col-lg-6">
+                        <a href="./springmvc5-i18n.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+                        <p style="margin-left: 25px; text-decoration: underline;"> Internacionalización i18n </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <a href="./springboot2.html">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+                        <p style="text-decoration: underline;">Introducción a Spring Boot</p>
+                    </div>
+                </div>
+              </div> <!-- / main col -->
+        </div> <!-- / main row -->
+    </div> <!-- / main container -->
+    <hr>
+    <!-- footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>

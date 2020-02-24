@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Óscar martínez Bañales">
+    <meta name="copyright" content="Óscar martínez Bañales">
+    <meta name="description" content="Página de programación en Java"/>
+    <meta name="keywords" content="java, spring, spring mvc, spring boot, groovy">
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Chilanka&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand&display=swap" rel="stylesheet">
+    <!-- jQuery JS --> 
+    <script src="../js/jquery.min.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/highlight/styles/atom-one-light.css">
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <title>CodigoJava - springboot2 - jpa</title>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#"><img src="../images/title.png"></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="../index.html">home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../contact.html">contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://es.stackoverflow.com/users/110116/oscar?tab=profile">about</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Page Header -->
+    <header class="masthead">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+              <img class="img-fluid" src="../images/logo.png">
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+          <h2 class="sub-title bg-danger text-white" align="center">Spring Boot 2 - JPA - Thymeleaf</h2>
+          <p>Descarga el <a href="https://github.com/wanchopi/springboot2-data-jpa-thymeleaf">proyecto de GitHub</a>.</p>
+          <h4 class="sub-title bg-secondary text-white">Introducción</h4>
+          <p>Ahora que sabemos construir un proyecto con <strong>Spring Boot</strong>, usar el motor de plantillas <strong>Thymeleaf</strong> e implementar un <em>CRUD</em> con <strong>Spring Mvc</strong>, implementemos un proyecto utilizando todo lo anteriormente expuesto. Lo completaremos en un proyecto posterior añadiendo alguna funcionalidad como un autocompletado con <strong>jQuery</strong> y una paginación.</p>
+          <p>Además en este proyecto tendremos dos modelos y de esta manera estableceremos una relación <mark>uno a muchos</mark>, de esta manera, cuando hayamos terminado espero tener un proyecto medianamente serio y realista.</p> 
+          <h4 class="sub-title bg-secondary text-white">El Proyecto</h4>
+          <h5>La estructura del proyecto</h5>
+          <img src="../images/springboot2-jpa-thymeleaf.png">
+          <h6 class="text-info">application.properties</h6>
+          <div class="col-lg-12 mycode">
+              <pre><code class="properties">
+spring.jpa.hibernate.ddl-auto: update
+spring.jpa.show-sql: true
+spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
+
+spring.datasource.url: jdbc:mysql://localhost:3306/testdb
+spring.datasource.username: root
+spring.datasource.password:
+spring.datasource.driverClassName: com.mysql.jdbc.Driver
+spring.datasource.type: com.zaxxer.hikari.HikariDataSource
+
+ ## HikariCP config 
+spring.datasource.hikari.pool-name: pool-hikari-example
+spring.datasource.hikari.maximum-pool-size: 10
+spring.datasource.hikari.connection-timeout: 60000                
+              </code></pre>
+          </div>
+          <p>Encontramos unas lineas desconocidas en el <mark>application.properties</mark>:</p>
+          <div class="col-lg-12 mycode">
+              <pre><code class="properties">
+...
+
+ ## HikariCP config 
+spring.datasource.hikari.pool-name: pool-hikari-example
+spring.datasource.hikari.maximum-pool-size: 10
+spring.datasource.hikari.connection-timeout: 60000                
+              </code></pre>
+          </div>
+          <p>Estamos estableciendo un pool de conexiones con <strong>HikariCP</strong>. Os dejo unos enlaces interesantes al respecto.</p>
+          <div class="my-links">
+            <ul>
+              <li><a href="https://www.baeldung.com/hikaricp">Introduction to HikariCP</a></li>
+              <li><a href="https://www.baeldung.com/spring-boot-hikari">Configuring a Hikari Connection Pool with Spring Boot</a></li>
+            </ul>
+          </div>
+          <h5>Las dependencias</h5>
+          <h6 class="text-info">pom.xml</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="XML">
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;nz.net.ultraq.thymeleaf&lt;/groupId&gt;
+      &lt;artifactId&gt;thymeleaf-layout-dialect&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-devtools&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+      &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+      &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+      &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+      &lt;optional&gt;true&lt;/optional&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+      &lt;exclusions&gt;
+        &lt;exclusion&gt;
+          &lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;
+          &lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+      &lt;/exclusions&gt;
+    &lt;/dependency&gt;
+        
+        &lt;!-- webjars --&gt;
+    &lt;dependency&gt;
+          &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+          &lt;artifactId&gt;bootstrap&lt;/artifactId&gt;
+          &lt;version&gt;4.1.0&lt;/version&gt;
+       &lt;/dependency&gt;
+     &lt;dependency&gt;
+       &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+        &lt;artifactId&gt;jquery&lt;/artifactId&gt;
+        &lt;version&gt;3.4.1&lt;/version&gt;
+     &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+        &lt;artifactId&gt;jquery-ui&lt;/artifactId&gt;
+        &lt;version&gt;1.12.1&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+        &lt;artifactId&gt;jquery-ui-themes&lt;/artifactId&gt;
+        &lt;version&gt;1.12.1&lt;/version&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;  
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.webjars&lt;/groupId&gt;
+        &lt;artifactId&gt;font-awesome&lt;/artifactId&gt;
+        &lt;version&gt;5.11.2&lt;/version&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;   
+            </code></pre>
+          </div>
+          <p>Como novedad vemos el <em>starter </em><mark>spring-boot-starter-data-jpa</mark> y los <mark>webjars</mark> que vamos a necesitar en el proyecto.</p>
+          <hr>
+          <p class="text-danger"><strong>Nota</strong>: Cuando me refiero al proyecto, estoy refiriendome a este que estamos viendo y al próximo, pues es la continuación de este. Quiere decir que para este puede que me sobren algún <em>webjar</em>, pero me harán falta para la continuación.</p>
+          <hr>
+          <h5>La Configuración</h5>
+          <p>Ver el <a href="springboot2-thymeleaf.html#config">proyecto anterior</a></p>
+          <h5>El modelo</h5>
+          <h6 class="text-info">Player.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.models;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import lombok.Data;
+
+import javax.validation.constraints.Email;
+
+/**
+ * Player entity
+ * @author Wanchopi
+ *
+ */
+@Entity
+@Table(name = "PLAYERS")
+public @Data class Player {
+  
+  @Id
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @Column(name = "NAME")  
+  @NotNull
+  @Size(min=5, max=24)
+  private String name;
+  
+  @Column(name = "EMAIL")
+  @NotNull
+  @Email
+  private String email;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "ID_TEAM")
+  @NotNull
+  private Team team;
+
+}
+            </code></pre>
+          </div>
+          <h6 class="text-info">Team.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.models;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import lombok.Getter;
+import lombok.Setter;
+
+
+/**
+ * Team entity
+ * @author Wanchopi
+ *
+ */
+@Entity
+@Table(name = "TEAMS")
+public class Team {
+  
+  @Id
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Setter @Getter
+  private Long id;
+  
+  @Column(name = "NAME")
+  @Setter @Getter
+  private String name;
+  
+  @Column(name = "CITY")
+  @Setter @Getter
+  private String city;
+  
+  @OneToMany(mappedBy = "team")
+  @Setter @Getter
+  private List&lt;Player&gt; players = new ArrayList&lt;Player&gt;();
+
+}              
+            </code></pre>
+          </div>
+          <p>Establecemos una relación de <span class="underlined-text">muchos a uno</span>, un <strong> Team</strong> (equipo) puede tener muchos <strong>Player</strong> (jugadores).</p>
+          <h5>El Controlador</h5>
+          <p></p>
+          <h6 class="text-info">AppController.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.controllers;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wanchopi.models.Player;
+import com.wanchopi.repositories.PlayerRepository;
+import com.wanchopi.repositories.TeamRepository;
+
+/**
+ * Main controller
+ * 
+ * @author Wanchopi
+ *
+ */
+@Controller
+public class AppController {
+  
+  @Autowired 
+  private TeamRepository teamRepository;
+  @Autowired 
+  private PlayerRepository playerRepository;
+  
+  @InitBinder
+    public void initBinder(WebDataBinder dataBinder) {
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
+        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+    }
+  
+  @RequestMapping(value = "/")
+  public String home(ModelMap mp) {
+    mp.put("players", playerRepository.findAll());
+    return "index";
+  }
+
+  @GetMapping(value = "/create")
+  public String showForm(ModelMap mp) {
+    mp.put("player", new Player());
+    mp.put("teams", teamRepository.findAll());
+    return "player-form";
+  }
+  
+  @PostMapping(value = "/save")
+  public String save(@Valid Player player, BindingResult br , ModelMap mp) {
+    if (br.hasErrors()) {
+      mp.put("teams", teamRepository.findAll());
+      return "player-form";   
+    } else {
+      playerRepository.save(player);
+      mp.put("players", playerRepository.findAll());
+      return "redirect:/";
+    } 
+  }
+  
+  @GetMapping(value = "/edit/{id}")
+  public String showEditForm(@PathVariable("id") long id, ModelMap mp) {
+    Player player = playerRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+    mp.put("player", player);
+    mp.put("teams", teamRepository.findAll());
+    return "/update-form";
+  }
+  
+  @PostMapping(value = "/update")
+  public String update(@Valid Player player, BindingResult br , ModelMap mp) {
+    if (br.hasErrors()) {
+      mp.put("teams", teamRepository.findAll());
+      return "/update-form";
+    } else {
+      playerRepository.save(player);
+      mp.put("players", playerRepository.findAll());
+      return "redirect:/";
+    }
+  } 
+  
+  @GetMapping(value = "/delete/{id}")
+  public String delete(@PathVariable("id") long id, ModelMap mp) {
+    Player player = playerRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+    playerRepository.delete(player);
+    mp.put("players", playerRepository.findAll());
+    return "redirect:/";
+  }
+
+}
+            </code></pre>
+          </div>
+          <p>En el <strong>controller</strong> los métodos típicos para un <em>CRUD</em> con su validación etc...</p>
+          <h5>El Repositorio</h5>
+          <h6 class="text-info">PlayerRepository.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.wanchopi.models.Player;
+
+/**
+ * Player repository
+ * 
+ * @author Wanchopi
+ *
+ */
+@Repository
+public interface PlayerRepository extends JpaRepository&lt;Player, Long&gt;{}
+            </code></pre>
+          </div>
+          <p></p>
+          <h6 class="text-info">TeamRepository.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.wanchopi.models.Team;
+
+/**
+ * Team repository
+ * 
+ * @author Wanchopi
+ *
+ */
+@Repository
+public interface TeamRepository extends JpaRepository&lt;Team, Long&gt;{}
+            </code></pre>
+          </div>
+          <p>En los repositorios ya hemos visto lo que <strong>Spring Data JPA</strong> hace por los desarrolladores. No hay nada mas que añadir.</p>
+          <hr>
+          <p class="text-danger"><strong>Nota</strong>: Cuando completemos este proyecto con una paginación y un autocompletado implementaremos una capa de servicio pues a parte de los métodos que nos ofrece <mark>JpaRepository</mark> tendremos que implementar los nuestros propios.</p>
+          <hr>
+          <h5>Testing</h5>
+          <p></p>
+          <h6 class="text-info">AppControllerTest.java</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="java">
+package com.wanchopi.controllers;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.wanchopi.repositories.PlayerRepository;
+import com.wanchopi.repositories.TeamRepository;
+
+
+@RunWith(SpringRunner.class)
+@WebMvcTest(AppController.class)
+@AutoConfigureMockMvc
+public class AppControllerTest {
+  
+  @Autowired
+  private MockMvc mockMvc;
+  
+  @Autowired
+  private AppController controller;
+  
+  @MockBean
+  private TeamRepository teamRepository;
+  
+  @MockBean
+  private PlayerRepository playerRepository;
+  
+  @Test
+  public void contexLoads() throws Exception {
+    assertThat(controller).isNotNull();
+  }
+  
+  @Test
+  public void testHome() throws Exception {
+    this.mockMvc.perform(get("/"))
+      .andExpect(status().isOk())
+      .andDo(print())
+      .andExpect(view().name("index"));
+  }
+  
+}
+            </code></pre>
+          </div>
+          <h5>Las vistas</h5>
+          <h6 class="text-info">header.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml"&gt;
+  &lt;!-- Static navbar --&gt;
+  &lt;nav class="navbar navbar-light bg-light"&gt;
+    &lt;a th:href="@{/}"&gt;&lt;img alt="logo" th:src="@{/assets/images/mini-logo.png}"&gt;&lt;/a&gt;
+    &lt;form class="form-inline my-2 my-lg-0" action="#" method="post"&gt;
+        &lt;input class="form-control mr-sm-2" type="text" name="keyword" placeholder="Team search" 
+        aria-label="Search" id="teamName"&gt;
+        &lt;button class="btn btn-outline-success my-2 my-sm-0" type="submit"&gt;Search&lt;/button&gt;
+      &lt;/form&gt;
+  &lt;/nav&gt;
+  &lt;!-- header --&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+      &lt;div class="col-lg-12" align="center"&gt;
+        &lt;img alt="logo" th:src="@{/assets/images/main-logo.png}"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">footer.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;div th:fragment="footer" class="footer" xmlns:th="http://www.w3.org/1999/xhtml"&gt;
+    &lt;div class="container"&gt;
+        &lt;p&gt;&lt;span th:text="#{text.footer}" class="text-muted"&gt;App footer&lt;/span&gt;&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">header-error.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;header th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml"&gt;
+  &lt;!-- header --&gt;
+  &lt;div class="container"&gt;
+    &lt;div class="row"&gt;
+      &lt;div class="col-lg-12" align="center"&gt;
+        &lt;img alt="logo" th:src="@{/assets/images/main-logo.png}"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/header&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">layout.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
+  &lt;title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE"&gt;SpringBootThymeleaf&lt;/title&gt;
+  &lt;meta
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    name="viewport" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.1.0/css/bootstrap.min.css" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="/webjars/jquery/3.4.1/jquery.min.css" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="webjars/jquery-ui/1.12.1/jquery-ui.min.css" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="webjars/jquery-ui-themes/1.12.1/blitzer/theme.css" /&gt; 
+  &lt;link rel="stylesheet" type="text/css" href="webjars/font-awesome/5.11.2/css/all.min.css" /&gt; 
+  &lt;link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}"/&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;!--header.html  that's here  --&gt;
+  &lt;header&gt;
+    &lt;div th:replace="fragments/header :: header"&gt;&lt;/div&gt;
+  &lt;/header&gt;
+  
+  &lt;div layout:fragment="content"&gt;
+    &lt;!-- Your Page Content Here --&gt;
+  &lt;/div&gt;
+
+  &lt;!--footer.html  that's here  --&gt;
+  &lt;footer&gt;
+    &lt;div th:replace="fragments/footer :: footer"&gt;&lt;/div&gt;
+  &lt;/footer&gt;
+
+  &lt;!-- JS --&gt;
+  &lt;script type="text/javascript" src="/webjars/bootstrap/4.1.0/js/bootstrap.min.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="/webjars/jquery/3.4.1/jquery.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+    $(document).ready(function () {
+      $('.fa-times').css('color', '#ff0000');
+      $('.fa-edit').css('color', '#0000ff');
+    });
+  &lt;/script&gt;
+  &lt;!-- blinking effect --&gt;
+  &lt;script&gt;
+  $(document).ready(function blink() {
+    $('#a-save').fadeIn(750).delay(250).fadeOut(1000, blink);
+  });
+  &lt;/script&gt;
+  &lt;script&gt;
+  $(document).ready(function() {
+    $('#name').focus();
+  });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">layout-error.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;
+  &lt;title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE"&gt;SpringBootThymeleaf&lt;/title&gt;
+  &lt;meta
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    name="viewport" /&gt;
+  &lt;link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.1.0/css/bootstrap.min.css" /&gt;
+  &lt;link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}"/&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;!--header.html  that's here  --&gt;
+  &lt;header&gt;
+    &lt;div th:replace="fragments/header-error :: header"&gt;&lt;/div&gt;
+  &lt;/header&gt;
+
+  &lt;div layout:fragment="content"&gt;
+    &lt;!-- Your Page Content Here --&gt;
+  &lt;/div&gt;
+  
+  &lt;!--footer.html  that's here  --&gt;
+  &lt;footer&gt;
+    &lt;div th:replace="fragments/footer :: footer"&gt;&lt;/div&gt;
+  &lt;/footer&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">index.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorator="layouts/layout"&gt;
+&lt;head&gt;
+  &lt;title&gt;index :: n.b.a.&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- body --&gt;
+  &lt;div layout:fragment="content"&gt;
+    &lt;div class="container-fluid" align="center"&gt;  
+      &lt;div class="col-lg-9" style="margin-top: 50px;"&gt;
+        &lt;div th:if="${!players.isEmpty()}"&gt;
+          &lt;table class="table"&gt;
+            &lt;thead class="thead-dark"&gt;
+              &lt;tr align="center"&gt;
+                &lt;th scope="col"&gt;ID&lt;/th&gt;
+                &lt;th scope="col"&gt;NAME&lt;/th&gt;
+                &lt;th scope="col"&gt;E-MAIL&lt;/th&gt;
+                &lt;th scope="col"&gt;TEAM&lt;/th&gt;
+                &lt;th scope="col"&gt;EDIT&lt;/th&gt;
+                &lt;th scope="col"&gt;DELETE&lt;/th&gt;
+              &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+              &lt;tr align="center" th:each="player: ${players}"&gt;
+                &lt;td th:text="${player.id}"&gt;&lt;/td&gt;
+                &lt;td th:text="${player.name}"&gt;&lt;/td&gt;
+                &lt;td th:text="${player.email}"&gt;&lt;/td&gt;
+                &lt;td th:text="${player.team.name}"&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;a th:href="@{/edit/{id}(id=${player.id})}"&gt;&lt;i class="fa fa-edit"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;a th:href="@{/delete/{id}(id=${player.id})}"&gt;&lt;i class="fa fa-times"&gt;&lt;/i&gt;&lt;/a&gt;&lt;/td&gt;
+              &lt;/tr&gt;
+            &lt;/tbody&gt;
+          &lt;/table&gt;
+        &lt;/div&gt;
+        &lt;div th:unless="${!players.isEmpty()}"&gt;
+          &lt;p&gt;no items to show&lt;/p&gt; 
+        &lt;/div&gt;
+        &lt;a class="a-save" id="a-save" th:href="@{/create}"&gt;save a new Player&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt; 
+
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">player-form.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorator="layouts/layout"&gt;
+&lt;head&gt;
+  &lt;!-- fonts googleapis--&gt;
+  &lt;link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet"&gt;
+  &lt;title&gt;form :: springboot&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- body --&gt;
+  &lt;div layout:fragment="content"&gt;
+    &lt;div class="container-fluid" align="center"&gt;  &lt;!-- main container --&gt;
+      &lt;div class="col-lg-9 player-form"&gt;
+        &lt;form th:action="@{save}" th:object="${player}" method="post" id="player-form"&gt; 
+          &lt;!-- name --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;label for="name" class="col-lg-4 control-label font-weight-bold"&gt;Name&lt;/label&gt;
+            &lt;div class="col-lg-4"&gt;
+              &lt;input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Name" required="required"/&gt;
+              &lt;span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="alert text-danger"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- email --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;label for="email" class="col-lg-4 control-label font-weight-bold"&gt;Email&lt;/label&gt;
+            &lt;div class="col-lg-4"&gt;
+              &lt;input type="text" th:field="*{email}" class="form-control" id="email" placeholder="Email" required="required"/&gt;
+              &lt;span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert text-danger"&gt;&lt;/span&gt; 
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- team --&gt;
+            &lt;div class="form-group"&gt;
+              &lt;label for="team" class="col-lg-4 control-label font-weight-bold"&gt;Team&lt;/label&gt;
+              &lt;div class="col-lg-4" align="left"&gt;
+                &lt;select th:field="*{team}" class="form-control"&gt;
+                  &lt;option value=""&gt; Select team &lt;/option&gt;
+                  &lt;option th:each="team : ${teams}"
+                    th:value="${team.id}"
+                    th:text="${team.name}"
+                    th:selected="false"
+                  /&gt;
+                &lt;/select&gt;
+                &lt;span th:if="${#fields.hasErrors('team')}" th:errors="*{team}" class="alert text-danger"&gt;&lt;/span&gt; 
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- Button --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;div class="col-lg-4" align="left"&gt;
+              &lt;input type="submit" class="btn" value="Save"&gt; 
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt; &lt;!-- /main container --&gt;
+  &lt;/div&gt; &lt;!-- /content --&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">update-form.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorator="layouts/layout"&gt;
+&lt;head&gt;
+  &lt;!-- fonts googleapis--&gt;
+  &lt;link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet"&gt; 
+  &lt;title&gt;form :: springboot&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- body --&gt;
+  &lt;div layout:fragment="content"&gt;
+    &lt;div class="container-fluid" align="center"&gt;  &lt;!-- main container --&gt;
+      &lt;div class="col-lg-9 player-form"&gt;
+        &lt;form th:action="@{/update}" th:object="${player}" method="post" id="player-form"&gt;
+          &lt;!-- id --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;label for="id" class="col-md-4 control-label font-weight-bold"&gt;ID&lt;/label&gt;
+            &lt;div class="col-md-4"&gt;
+              &lt;input type="text" th:field="*{id}" class="form-control" id="id" placeholder="" readonly="readonly"/&gt;
+              &lt;span th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="alert text-danger"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- name --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;label for="name" class="col-md-4 control-label font-weight-bold"&gt;Name&lt;/label&gt;
+            &lt;div class="col-md-4"&gt;
+              &lt;input type="text" th:field="*{name}" class="form-control" id="name" placeholder="" required="required"/&gt;
+              &lt;span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="alert text-danger"&gt;&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- email --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;label for="email" class="col-md-4 control-label font-weight-bold"&gt;Email&lt;/label&gt;
+            &lt;div class="col-md-4"&gt;
+              &lt;input type="text" th:field="*{email}" class="form-control" id="email" placeholder="" required="required"/&gt;
+              &lt;span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="alert text-danger"&gt;&lt;/span&gt; 
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- team --&gt;
+            &lt;div class="form-group"&gt;
+              &lt;label for="team" class="col-md-4 control-label font-weight-bold"&gt;Team&lt;/label&gt;
+              &lt;div class="col-lg-4" align="left"&gt;
+                &lt;select th:field="*{team}" class="form-control"&gt;
+                  &lt;option value=""&gt;&lt;/option&gt;
+                  &lt;option th:each="team : ${teams}"
+                    th:value="${team.id}"
+                    th:text="${team.name}"
+                    th:selected="false"
+                  /&gt;
+                &lt;/select&gt;
+                &lt;span th:if="${#fields.hasErrors('team')}" th:errors="*{team}" class="alert text-danger"&gt;&lt;/span&gt;  
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;!-- Button --&gt;
+          &lt;div class="form-group"&gt;
+            &lt;div class="col-md-4" align="left"&gt;
+              &lt;input type="submit" class="btn" value="Update"&gt; 
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt; &lt;!-- /main container --&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          <h6 class="text-info">error.html</h6>
+          <div class="col-lg-12 mycode">
+            <pre><code class="html">
+&lt;!DOCTYPE html&gt;
+&lt;html 
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" 
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorator="layouts/layout-error"&gt;
+&lt;head&gt;
+  &lt;title&gt;error :: n.b.a.&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div layout:fragment="content"&gt;
+    &lt;div class="container-fluid" align="center"&gt;
+      &lt;h1&gt;Custom error page&lt;/h1&gt;
+      
+      &lt;div class="messages-error"&gt; 
+        &lt;ul&gt;
+          &lt;li&gt;&lt;span&gt;Status : &lt;/span&gt;&lt;span th:text="${status}"&gt;status&lt;/span&gt;&lt;/li&gt;
+              &lt;li&gt;&lt;span&gt;Error : &lt;/span&gt;&lt;span th:text="${error}"&gt;error&lt;/span&gt;&lt;/li&gt;
+              &lt;li&gt;&lt;span&gt;Message : &lt;/span&gt;&lt;span th:text="${message}"&gt;message&lt;/span&gt;&lt;/li&gt;
+              &lt;li&gt;&lt;span&gt;Path : &lt;/span&gt;&lt;span th:text="${path}"&gt;path&lt;/span&gt;&lt;/li&gt;
+              &lt;!-- &lt;li&gt;&lt;span&gt;Trace : &lt;/span&gt;&lt;span th:text="${trace}"&gt;trace&lt;/span&gt;&lt;/li&gt; --&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;  
+      
+      &lt;a id="a-error" th:href="@{/}"&gt; - Return main page - &lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </code></pre>
+          </div>
+          
+          <hr>
+          <h4 class="sub-title bg-secondary text-white">Herramientas y Software</h4>
+          <ul>
+            <li>Eclipse Version: 2019-03 (4.11.0)</li>
+            <li>Java SE-1.8 (jdk1.8.0)</li>
+            <li>Spring Boot 2.2.4</li>
+            <li>Spring MVC 5.2.3</li>
+            <li>thymeleaf 3.0.11</li>
+            <li>thymeleaf-layout-dialect 2.4.1</li>
+            <li>mysql 8.0.19</li>
+            <li>bootstrap 4.1.0</li>
+            <li>jquery 3.4.1</li>
+          </ul>
+          <!-- nav -->
+          <div class="row" style="margin-left: 20px;">
+            <div class="col-lg-6">
+              <a href="springboot2-thymeleaf.html"><i class='fas fa-arrow-circle-left'></i> anterior </a>
+              <p style="margin-left: 25px; text-decoration: underline;">Spring Boot 2 - Thymeleaf</p>
+            </div>
+            <div class="col-lg-6">
+              <a href="#">siguiente <i class='fas fa-arrow-circle-right'></i></a>
+              <p style="text-decoration: underline;">Spring Boot 2 - JPA - Pagination</p>
+            </div>
+          </div>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+    <hr>
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p class="copyright text-muted"><a href="https://github.com/wanchopi" class="my-footer-css">Mis proyectos en github.com</a></p>
+            <p class="copyright text-muted">Desarrollado por Óscar Martínez con <a href="https://getbootstrap.com/" class="my-footer-css">Bootstrap</a> y <a href="https://jquery.com/" class="my-footer-css">jQuery</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/highlight.pack.js"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
